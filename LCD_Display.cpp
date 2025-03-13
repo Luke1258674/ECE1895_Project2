@@ -1,6 +1,7 @@
 // connect to header file
 // Luke Rajakovich
 // Ryan Lopez
+// Calvin Fetzek
 #include "./LCD_Display.h"
 
 void showScoreAndTime(LiquidCrystal_I2C lcd, int score, int time) {
