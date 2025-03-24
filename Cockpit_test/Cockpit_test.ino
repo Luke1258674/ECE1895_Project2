@@ -126,7 +126,8 @@ void loop() {
     myDFPlayer.playFolder(1, 1);  
     delay(2000);
 
-    // Set connector pin to low
+    // Wait to read serial port & connector pin to be HIGH
+    
 
 
 
