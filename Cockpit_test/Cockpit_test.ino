@@ -38,7 +38,7 @@ Adafruit_SSD1306 roll_display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, 
 #define CLEAR_PIN 4
 
 //Connector Pin
-#define BUTTON_PIN 2
+#define CONNECTOR_PIN 2
 
 // import DFPlayer Mini library
 #include "DFRobotDFPlayerMini.h"
@@ -65,7 +65,8 @@ void setup() {
     digitalWrite(CLEAR_PIN, HIGH);
 
     /****** Connector input pin ******/
-    pinMode(BUTTON_PIN, INPUT);
+    pinMode(CONNECTOR_PIN, INPUT); // 
+    digitalWrite(CONNECTOR_PIN,LOW); // Disable internal pull up 
 
     /****** OLED Display initialization ******/
     // SSD1306_SWITCHCAPVCC = start display voltage from 3.3V internally
@@ -102,6 +103,32 @@ void setup() {
 }
 
 void loop() {
-  
+
+    /***** Starting sequence  *****/
+    // Display press start
+    showStartMenu(lcd);
+    delay(500); 
+
+    // turn green LEDs on:
+    // get ready to store shift register (stores at rising edge)
+    digitalWrite(LATCH_PIN, LOW);
+
+    // shift out the bits:
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 0x55 /* number to display */);
+
+    // store shift register
+    digitalWrite(LATCH_PIN, HIGH);
+
+    // pause before next value:
+    delay(500);
+
+    // play "Press button to begin game" for 2 seconds 
+    myDFPlayer.playFolder(1, 1);  
+    delay(2000);
+
+    // Set connector pin to low
+
+
+
 
 }
