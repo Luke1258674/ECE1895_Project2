@@ -23,7 +23,7 @@ ECE1895 Project2 Team PI
     | ----- | ----- |
     |Cockpit_test.ino|Arduino program used for final product|
     |Cockpit.h|Header file to store functions to be used in the final product|
-    |Cockpit.cpp|C++ file for functions used in hte final product|
+    |Cockpit.cpp|C++ file for functions used in the final product|
 
 2. **Inputs Module**
 
