@@ -17,7 +17,13 @@ ECE1895 Project2 Team PI
     |OLED_display.cpp| c++ file for OLED display functions|
     | ----- | ----- |
     |LED_Indicator_program.ino| Example program for LED indicator lights using 74HC595 shift register|
-    |speaker_program.ino| Example program for DF Player Mini|
+    | ----- | ----- |
+    |speaker_program.ino| Example program for DF Player Mini for audio output|
+    |Speaker.h|Header file to import libraries used for the DFPlayer Mini|
+    | ----- | ----- |
+    |Cockpit_test.ino|Arduino program used for final product|
+    |Cockpit.h|Header file to store functions to be used in the final product|
+    |Cockpit.cpp|C++ file for functions used in hte final product|
 
 2. **Inputs Module**
 
