@@ -32,11 +32,11 @@
 // pin number corresponds to the digital pin numbers at https://docs.arduino.cc/retired/hacking/hardware/PinMapping168/
 #define OLED_MOSI   11
 #define OLED_CLK   13
-#define OLED_DC    10
-#define OLED_CS    8
-#define OLED_CS_ROLL 9
-#define OLED_RESET 5
-#define OLED_RESET_ROLL 6
+#define OLED_DC    6
+#define OLED_CS    5
+#define OLED_RESET 7
+#define OLED_CS_ROLL 8
+#define OLED_RESET_ROLL 9
 
 // PI is already defined in arduino.h
 

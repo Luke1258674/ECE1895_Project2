@@ -1,9 +1,13 @@
 #ifndef SPEAKER_HEADER
 #define SPEAKER_HEADER
 
-// import DFPlayer Mini library
-#include <SoftwareSerial.h>
-#include "DFRobotDFPlayerMini.h"
+// import soft serial library but only for port D
+// #include "./SSerialD.h"
+// #include "./SSerialB.h"
+// #include <NeoSWSerial.h>
+// #include <AltSoftSerial.h>
 
+// import DFPlayer Mini library
+#include "DFRobotDFPlayerMini.h"
 
 #endif 

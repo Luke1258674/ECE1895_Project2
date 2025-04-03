@@ -30,7 +30,6 @@ Adafruit_SSD1306 roll_display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, 
 void setup() {
 
   // SSD1306_SWITCHCAPVCC = start display voltage from 3.3V internally
-  Serial.begin(9600);
   if(!pitch_display.begin(SSD1306_SWITCHCAPVCC)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
@@ -48,6 +47,7 @@ void setup() {
   // Draw attitude indicator in static mode when the system starts up
   displayRollIndicator_static(roll_display);
 
+  /*
   // Draw attitude indicator in transient mode where it changes based on pitch
   int pitch = 0;
   int roll = 0;
@@ -62,6 +62,7 @@ void setup() {
     displayPitchIndicator_transient(pitch_display, pitch);
     displayRollIndicator_transient(roll_display, roll);
   }
+  */
 
 }
 

@@ -13,7 +13,7 @@
 // GND pin8  -> GND
 // VCC pin16 -> VCC
 // OE pin 13 -> GND
-// MR pin 10 -> pin 6 (digital pin 4)
+// MR pin 10 -> pin 26 (analog pin 3)
 // DS (serial data input / data pin) pin 14 ->  pin 23 (analog pin 0)
 // SH_CP (shift register clock / clock pin) pin 11 -> pin 24 (analog pin 1)
 // ST_CP (storage register clock / latch pin) pin 12 -> pin 25 (analog pin 2) * connect a 10uF capacitor
@@ -31,7 +31,7 @@
 #define DATA_PIN  A0
 
 // Pin define clear shift register 
-#define CLEAR_PIN 4
+#define CLEAR_PIN A3
 
 //Pin connected to button
 #define BUTTON_PIN 2
@@ -55,7 +55,7 @@ void setup() {
   digitalWrite(LATCH_PIN, LOW);
 
   // shift out the bits:
-  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 3 /* number to display */);
+  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 4 /* number to display */);
 
   // store shift register
   digitalWrite(LATCH_PIN, HIGH);
@@ -66,37 +66,5 @@ void setup() {
 }
 
 void loop() {
-  // read the state of the pushbutton value:
-  int buttonState = digitalRead(BUTTON_PIN);
-
-  // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
-  if (buttonState == HIGH) {
-    // turn LED on:
-    // get ready to store shift register (stores at rising edge)
-    digitalWrite(LATCH_PIN, LOW);
-
-    // shift out the bits:
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 3 /* number to display */);
-
-    // store shift register
-    digitalWrite(LATCH_PIN, HIGH);
-
-    // pause before next value:
-    delay(1000);
-
-  }else{
-    // turn LED off:
-    // get ready to store shift register (stores at rising edge)
-    digitalWrite(LATCH_PIN, LOW);
-
-    // shift out the bits:
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 0 /* number to display */);
-
-    // store shift register
-    digitalWrite(LATCH_PIN, HIGH);
-
-    // pause before next value:
-    delay(1000);
-  }
 
 }
