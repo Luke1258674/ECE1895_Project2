@@ -1,8 +1,12 @@
 
-// Defining pins
+// Connect hearer files
+#include "./User_input.h"
+#include <Wire.h>
+#include <Arduino.h>
 
+/* Define pins */
 // LED output pins
-const int ledPins[] = {5, 6}; 
+const int ledPins[] = {3, 4}; 
 
 // Button input pins
 const int buttonPins[] = {7, 8}; 
@@ -11,57 +15,48 @@ const int buttonPins[] = {7, 8};
 bool ledStates[2] = {false, false}; 
 
 // Potentiometer and 4 LEDs
-const int ledControlPins[] = {9, 10, 3, 4}; // 4 LEDs for potentiometer control
+const int ledControlPins[] = {5, 6, 9, 10}; // 4 LEDs for potentiometer control
 int ledsOn = 0;  // Variable to control how many LEDs are lit
 
 void setup() {
-
-    // Setup Joystick Pins
-    pinMode(A0, INPUT); // X-axis
-    pinMode(A1, INPUT); // Y-axis
-    pinMode(A2, INPUT); // Potentiometer 
-    pinMode(2, INPUT_PULLUP); // Button input with internal pull-up resistor
-    
-    // Setup LED Output Pins
-    for (int i = 0; i < 2; i++) {
-        pinMode(ledPins[i], OUTPUT);
-        digitalWrite(ledPins[i], LOW); // Start with LEDs off
-    }
-
-    // Setup Button Pins
-    for (int i = 0; i < 2; i++) {
-        pinMode(buttonPins[i], INPUT_PULLUP); // Use internal pull-up resistor
-    }
-
-    // Setup Potentiometer LED Pins
-    for (int i = 0; i < 4; i++) {
-        pinMode(ledControlPins[i], OUTPUT); // Set the LED pins as output
-        digitalWrite(ledControlPins[i], LOW); // Start with LEDs off
-    }
-    
+    // initialize I/Os
+    setup_GPIOpins(ledPins,buttonPins,ledStates,ledControlPins);
 }
 
 void loop() {
+  // wait for start button to be pressed
 
     // --- Joystick Reading (your original code) ---
     int xRaw = analogRead(A0); // Read X-axis
     int yRaw = analogRead(A1); // Read Y-axis
 
-    // Map the values from 0-1023 to -512 to 512
-    int xMapped = map(xRaw, 0, 1023, -512, 512);
-    int yMapped = map(yRaw, 0, 1023, -512, 512);
+    // Map the values from 0-1023 to -90 to 90
+    int xMapped = map(xRaw, 0, 1023, -90, 90);
+    int yMapped = map(yRaw, 0, 1023, -90, 90);
+
+    /*
+    // Map the joystick value to the number of LEDs to turn on (0-4 range)
+    if (xMapped<-50){
+      ledsOn=0;
+    }else if (xMapped<0){
+      ledsOn=1;
+    }else if (xMapped<30){
+      ledsOn=2;
+    }else if (xMapped<60){
+      ledsOn=3;
+    }else{
+      ledsOn=4;
+    }
+    */
 
     // Read the Joystick button state (LOW means pressed)
     bool buttonPressed = (digitalRead(2) == LOW);
 
     // --- Button 1 Reading ---
     if (digitalRead(buttonPins[0]) == LOW) { // Button 1 pressed (LOW state)
-      
-        if (digitalRead(buttonPins[0]) == LOW) { // Confirm still pressed
-            ledStates[0] = !ledStates[0]; // Toggle LED 1
-            digitalWrite(ledPins[0], ledStates[0] ? HIGH : LOW);
-        }
-        while (digitalRead(buttonPins[0]) == LOW);
+      digitalWrite(ledPins[0],HIGH);
+      delay(100);
+      digitalWrite(ledPins[0],LOW);
     }
 
     // --- Button 2 Reading ---
@@ -73,6 +68,7 @@ void loop() {
         }
         while (digitalRead(buttonPins[1]) == LOW);
     }
+
 
     // --- Potentiometer Reading ---
     int potValue = analogRead(A2); // Read the potentiometer value (0 to 1023)
@@ -90,19 +86,14 @@ void loop() {
       ledsOn=4;
     }
     // Control the potentiometer-controlled LEDs based on the potentiometer value
-
-    // Turn on LED
-    for (int i = 0; i < ledsOn; i++) {
-        digitalWrite(ledControlPins[i], HIGH);  
+        for (int i = 0; i < ledsOn; i++){
+      digitalWrite(ledControlPins[i],HIGH);
     }
-    
-    // Small delay for stability
-    delay(1000);
 
-    // Turn off LED
-    for (int i = 0; i < ledsOn; i++) {
-        digitalWrite(ledControlPins[i], LOW);  
+    for (int i = 4; i > ledsOn; i--){
+      digitalWrite(ledControlPins[i],LOW);
     }
-    
-    
+
+    delay(100);
+    */
 }
