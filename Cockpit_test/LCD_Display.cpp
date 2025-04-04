@@ -64,13 +64,13 @@ void showScoreAndTime(LiquidCrystal_I2C lcd, int score, int time) {
   }
   
 
-  void showGameOver(LiquidCrystal_I2C lcd, int score, int time){
+  void showGameOver(LiquidCrystal_I2C* lcd, int score, int time){
     // clear LCD at the beginning of the function call
-    lcd.clear();
+    lcd->clear();
 
     // Print the message: "Game Over"
-    lcd.setCursor(0,0);
-    lcd.print("   GAME OVER");
+    lcd->setCursor(0,0);
+    lcd->print("   GAME OVER");
     
     // Convert Seconds into XX:XX (Minutes:Seconds)
     int minute = time / 60;
@@ -91,6 +91,7 @@ void showScoreAndTime(LiquidCrystal_I2C lcd, int score, int time) {
     
     // Print the score and time as "Score:XX (XX:XX)"
     String scoreAndTime = "Score:" + String(score) + " (" + currentTime +")";
-    lcd.setCursor(0,1);
-    lcd.print(scoreAndTime);
+    lcd->setCursor(0,1);
+    lcd->print(scoreAndTime);
+    
   }
