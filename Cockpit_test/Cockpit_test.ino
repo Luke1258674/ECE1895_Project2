@@ -11,65 +11,88 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 Adafruit_SSD1306 pitch_display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 Adafruit_SSD1306 roll_display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET_ROLL, OLED_CS_ROLL); 
 
+// variables to store time since the game began (milli-seconds)
+unsigned long beginTime;
+unsigned long currentTime;
+int time; 
+
+// variables for UART communication
+Command cmd;
+bool newData = false;
+
+
+
 void setup() {
 
-  // move OLED to start up state
-  OLED_startup(pitch_display, roll_display);
+  // set gameline pin to output mode (default is High) *TOP PRIORITY
+  pinMode(GAMELINE_PIN,OUTPUT);
+  digitalWrite(GAMELINE_PIN,LOW);
+
+  // begin Serial at Baud rate 9600 *TOP PRIORITY
+  Serial.begin(9600);
+
+  // NMOS gate pin initialization 
+  pinMode(GATE_PIN, OUTPUT);
+  digitalWrite(GATE_PIN, LOW);
+
+  // start pin initialization 
+  pinMode(START_PIN,INPUT_PULLUP);
+
+  // turn 1 red LEDs on
+  digitalWrite(LATCH_PIN, LOW);   // get ready to store shift register (stores at rising edge)
+  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 1);   // shift out the bits 
+  digitalWrite(LATCH_PIN, HIGH);   // store shift register
 
   // move LCD to start up state
   LCD_startup(lcd);
 
+  // move OLED to start up state
+  OLED_startup(pitch_display, roll_display);
+
   // Move LEDs to start up state (all LEDs are on)
   LED_startup();
   
-  // move DFPlayer Mini to start up state
-  Speaker_output(1, 1, 2000);
+  // turn 2 red LEDs on
+  digitalWrite(LATCH_PIN, LOW);   // get ready to store shift register (stores at rising edge)
+  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 3);   // shift out the bits 
+  digitalWrite(LATCH_PIN, HIGH);   // store shift register
 
-  // start and connector pin initialization 
-  pinMode(START_PIN,INPUT_PULLUP);
-  pinMode(CONNECTOR_PIN, OUTPUT);
+  // move DFPlayer Mini to start up state
+  //Speaker_output(1, 1, 2000);
 
 }
 
 void loop() {
 
-  // debug
-  int game_count = 0; 
-  // debug
-
-  // variables to store current score, pitch angle, roll angle, and input device used
-  int parameter_array[4] = {0,0,0,0};
-
-  // variable to store score, pitch and roll 
-  int score;
-  int pitch;
-  int roll;
-
   // Wait for the start button to be pressed. 
-  // Once pressed, send a HIGH signal to the connector pin. 
+  // Once pressed, send a HIGH signal to the game line pin. 
   notify_start_button_pressed();
 
-  // turn off LEDs
-  // get ready to store shift register (stores at rising edge)
-  digitalWrite(LATCH_PIN, LOW);
-  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 0); 
-  digitalWrite(LATCH_PIN, HIGH);
+  // wait for UART signal to arrive 
+  while(newData == false){
+    get_UART_signal(cmd, newData);
 
-
-  // variables to store time since the game began (milli-seconds)
-  unsigned long beginTime;
-  unsigned long currentTime;
-  int time; 
+    // turn 3 red LEDs on
+    digitalWrite(LATCH_PIN, LOW);   // get ready to store shift register (stores at rising edge)
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 7);   // shift out the bits 
+    digitalWrite(LATCH_PIN, HIGH);   // store shift register
+  }
 
   // start timer only for the first loop
   beginTime = millis();
 
-  // keep delays as they are important 
-  delay(500);
+  if(newData == true){
+    debug(lcd, cmd);
+  }
 
-  // Loop to run game
-  while(game_count < 4){
+  // turn 4 red LEDs on
+  digitalWrite(LATCH_PIN, LOW);   // get ready to store shift register (stores at rising edge)
+  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 15);   // shift out the bits 
+  digitalWrite(LATCH_PIN, HIGH);   // store shift register
 
+  while(true);
+
+    /*
     // get the time when the function was called
     currentTime = millis();
     time = (int)((currentTime - beginTime) / 1000);
@@ -83,9 +106,7 @@ void loop() {
     // debug
 
     delay(500);
-    
-    // wait for UART signal to arrive 
-    // get_UART_signal(parameter_array);
+  
 
     // debug 
     parameter_array[0] = game_count * 10; // update score 
@@ -96,7 +117,6 @@ void loop() {
     // debug
 
     delay(500);
-    /*
     // Select action (device = 1: turn dial, device = 2: joystick, device = 3: press button, device = 4: game over) 
     if (parameter_array[3] == 1){
       
@@ -164,7 +184,5 @@ void loop() {
 
     }
     */
-  }
-
 
 }

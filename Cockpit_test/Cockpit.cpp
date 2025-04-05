@@ -1,3 +1,4 @@
+#include "Arduino.h"
 // connect to header file
 #include "./Cockpit.h"
 
@@ -12,20 +13,10 @@ void LED_startup(){
   digitalWrite(CLEAR_PIN, LOW);
   digitalWrite(CLEAR_PIN, HIGH);
 
-  // turn 4 red LEDs on
-  // get ready to store shift register (stores at rising edge)
-  digitalWrite(LATCH_PIN, LOW);
-  
-  // shift out the bits (15 = 1111 )
-  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 15); 
-
-  // store shift register
-  digitalWrite(LATCH_PIN, HIGH);
-
 }
 
 /****** OLED Display initialization ******/
-void OLED_startup(Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display){
+void OLED_startup(Adafruit_SSD1306 &pitch_display, Adafruit_SSD1306 &roll_display){
   // SSD1306_SWITCHCAPVCC = start display voltage from 3.3V internally
   if(!pitch_display.begin(SSD1306_SWITCHCAPVCC)) {
       // Serial.println(F("SSD1306 allocation failed"));
@@ -46,7 +37,7 @@ void OLED_startup(Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display)
 }
 
 /****** LCD Display Initialization ******/
-void LCD_startup(LiquidCrystal_I2C lcd){
+void LCD_startup(LiquidCrystal_I2C &lcd){
 
   lcd.init();
   lcd.backlight();
@@ -60,30 +51,23 @@ void LCD_startup(LiquidCrystal_I2C lcd){
 void Speaker_output(int folder, int track, int playback_time){
 
   // set NMOS to pass signal
-  pinMode(GATE_PIN, OUTPUT);
   digitalWrite(GATE_PIN, HIGH);
-  delay(500);
-
-  // begin serial communication with baud rate 9600
-  Serial.begin(9600);
+  delay(100);
 
   // Declare struct for DFPlayer mini. Note: this cannot be added as a global variable
   DFRobotDFPlayerMini myDFPlayer;
 
-  //Set serial communictaion time out 500ms
-  myDFPlayer.setTimeOut(500); 
+  //Set serial communictaion time out 100ms
+  myDFPlayer.setTimeOut(100); 
 
   // define initial values
   myDFPlayer.begin(Serial); // set serial port for myDFPlayer
   myDFPlayer.EQ(0); //Normal Equalization
-  myDFPlayer.volume(15);  //Set volume value (0~30).
+  myDFPlayer.volume(20);  //Set volume value (0~30).
 
   // play "Press button to begin game" for 2 seconds 
   myDFPlayer.playFolder(folder, track);  
   delay(playback_time);
-
-  // end serial communication
-  Serial.end();
   
   delay(100);
 
@@ -91,41 +75,48 @@ void Speaker_output(int folder, int track, int playback_time){
   digitalWrite(GATE_PIN, LOW);
 
   delay(100);
+
+  // clear buffer in serial
+  Serial.flush();
     
 }
 
 /****** Read UART ******/
-void get_UART_signal(int parameter_array[]){
+void get_UART_signal(Command& cmd, bool& newData){
 
-  // variables to store UART connection state
-  int UART_state = digitalRead(CONNECTOR_PIN); 
+  // reference: https://forum.arduino.cc/t/simple-code-to-send-a-struct-between-arduinos-using-serial/672196
 
-  // array to store the UART signals for [score, pitch, roll, device]
-  byte UART_signal_array[4]; 
+  // store data length
+  const byte startMarker = 255;
+  const byte rxDataLen = sizeof(cmd);
+  static byte recvData[rxDataLen];
+  byte rb;
+  byte* structStart;
+  structStart = reinterpret_cast<byte*> (&cmd);
 
-  // Wait to read serial port & connector pin to become LOW
-  while (UART_state == HIGH){
-    // if UART_state is HIGH -> remain in wait mode
-    UART_state =  digitalRead(CONNECTOR_PIN);
-  };
+  if (Serial.available() >= rxDataLen + 1 and newData == false){
+    rb = Serial.read();
 
-  // if UART_state is LOW -> begin serial communication
-  Serial.begin(9600);
+    if (rb == startMarker){
+      // copy teh bytes to the struct
+      for (byte n = 0; n < rxDataLen; n++){
+        *(structStart + n) = Serial.read();
+      }
+      // make sure there is no garbage left in the buffer
+      while (Serial.available() > 0){
+        byte dumpTheData = Serial.read();
+      }
 
-  // read bytes only when reaceiving data
-  if (Serial.available() > 0){
-    // read the UART signal until it reaches 4 bytes 
-    Serial.readBytes(UART_signal_array, sizeof(UART_signal_array));
+      // turn game line pin back to low once data is received
+      digitalWrite(GAMELINE_PIN, LOW);
+      
+      // update bool to track if new data has arrived
+      newData = true;
+    }
   }
 
-  // end Serial communication
-  Serial.end();
-
-  // get score, pitch, roll, and device
-  for (int i = 0; i< sizeof(UART_signal_array);i++){
-    parameter_array[i] = (int)UART_signal_array[i];
-  }
-
+  // clear buffer in serial
+  Serial.flush();
 }
 
 /***** Turn dial cockpit display *****/
@@ -345,6 +336,7 @@ void display_game_over_LCD(LiquidCrystal_I2C lcd, int score,int time){
 
 /***** Wait for Start Button to be pressed *****/
 void notify_start_button_pressed(){
+
   // variables for debouncing 
   int start_button_state = digitalRead(START_PIN);
   int last_button_state = LOW;
@@ -363,11 +355,23 @@ void notify_start_button_pressed(){
     }
   }
 
-  // Set connector pin to output to notify Luke's board that the start button was pressed
-  digitalWrite(CONNECTOR_PIN,HIGH);
-  delay(500);
-  digitalWrite(CONNECTOR_PIN,LOW);
-  delay(500);
-  // Set connector pin to input and pulled up to high internally
-  pinMode(CONNECTOR_PIN, INPUT_PULLUP);
+  // Set gameline pin to HIGH to notify Other's boards that the start button was pressed
+  digitalWrite(GAMELINE_PIN,HIGH);
+
+}
+
+
+void debug(LiquidCrystal_I2C &lcd, const Command& cmd){
+
+  // clear LCD at the beginning of the function call
+  lcd.clear();
+
+  String checking_value = String(cmd.device_used) + "," + String(cmd.score);
+  lcd.setCursor(0,0);
+  lcd.print(checking_value);
+
+  checking_value = String(cmd.yaw) + "," + String(cmd.roll) + "," + String(cmd.pitch);
+  lcd.setCursor(0,1);
+  lcd.print(checking_value);
+
 }

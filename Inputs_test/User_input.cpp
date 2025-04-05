@@ -1,3 +1,4 @@
+#include "Arduino.h"
 
 #include "./User_input.h"
 
@@ -27,8 +28,32 @@ void setup_GPIOpins(const int ledPins[], const int buttonPins[], bool ledStates[
         digitalWrite(ledControlPins[i], LOW); // Start with LEDs off
     }
 
-    // Setup UART connector pin 
-    pinMode(CONNECTOR_PIN,OUTPUT);
-    digitalWrite(CONNECTOR_PIN,HIGH);
+    // set up game line pin to input
+    pinMode(GAMELINE_PIN,INPUT_PULLUP);
 
+}
+
+void updateDataToSend(unsigned long& prevUpdateTime, unsigned long updateInterval, bool &newTxData){
+  if ((millis() - prevUpdateTime) == 0){
+    prevUpdateTime = millis();
+    // ensure message has been sent
+    if (newTxData == false){
+
+      newTxData == true;
+    }
+  }
+}
+
+void transmitData(const Command& cmd, bool &newTxData){
+
+  // size of transmit data 
+  const byte startMarker = 255;
+  const byte cmdDataLen = sizeof(cmd);
+
+  if (newTxData == true){
+    Serial.write(startMarker);
+    Serial.write((byte*) &cmd, cmdDataLen);
+
+    newTxData = false;
+  }
 }

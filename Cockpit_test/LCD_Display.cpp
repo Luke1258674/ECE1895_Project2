@@ -1,7 +1,7 @@
 // connect to header file
 #include "./LCD_Display.h"
 
-void showScoreAndTime(LiquidCrystal_I2C lcd, int score, int time) {
+void showScoreAndTime(LiquidCrystal_I2C &lcd, int score, int time) {
     // clear LCD at the beginning of the function call
     lcd.clear();
 
@@ -52,9 +52,11 @@ void showScoreAndTime(LiquidCrystal_I2C lcd, int score, int time) {
   }
   
 
-  void showStartMenu(LiquidCrystal_I2C lcd){
+  void showStartMenu(LiquidCrystal_I2C &lcd){
     // clear LCD at the beginning of the function call
     lcd.clear();
+
+    // begin LCD
 
     // Print the message: "Press Start to Take Off"
     lcd.setCursor(0,0);
@@ -64,13 +66,13 @@ void showScoreAndTime(LiquidCrystal_I2C lcd, int score, int time) {
   }
   
 
-  void showGameOver(LiquidCrystal_I2C* lcd, int score, int time){
+  void showGameOver(LiquidCrystal_I2C &lcd, int score, int time){
     // clear LCD at the beginning of the function call
-    lcd->clear();
+    lcd.clear();
 
     // Print the message: "Game Over"
-    lcd->setCursor(0,0);
-    lcd->print("   GAME OVER");
+    lcd.setCursor(0,0);
+    lcd.print("   GAME OVER");
     
     // Convert Seconds into XX:XX (Minutes:Seconds)
     int minute = time / 60;
@@ -91,7 +93,8 @@ void showScoreAndTime(LiquidCrystal_I2C lcd, int score, int time) {
     
     // Print the score and time as "Score:XX (XX:XX)"
     String scoreAndTime = "Score:" + String(score) + " (" + currentTime +")";
-    lcd->setCursor(0,1);
-    lcd->print(scoreAndTime);
+    lcd.setCursor(0,1);
+    lcd.print(scoreAndTime);
     
   }
+
