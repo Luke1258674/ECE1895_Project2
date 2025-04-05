@@ -8,17 +8,17 @@ const int buttonPins[] = {7, 8}; // Button input pins
 bool ledStates[2] = {false, false}; // LED toggle states
 const int ledControlPins[] = {5, 6, 9, 10}; // 4 LEDs for potentiometer control
 
-// timing variables for sending frequency
+// timing variables
 unsigned long prevUpdateTime = 0;
+unsigned long currentUpdateTime = 0;
 unsigned long updateInterval = 500;
-bool newTxData = false;
-
-// Variable to control how many LEDs are lit
-int ledsOn = 0;  
+bool newTxData = false; 
 
 // values to use in the game
 uint8_t device_used = 0; 
 uint8_t score = 0;
+bool user_action = false;
+bool user_timeout = false;
 
 // initialize struct
 Command cmd;
@@ -27,16 +27,12 @@ void setup() {
 
   // initialize I/Os
   setup_GPIOpins(ledPins,buttonPins,ledStates,ledControlPins);
-
-  // debug LED
-  digitalWrite(ledControlPins[0], HIGH);
 }
 
 void loop() {
-  // --- when game line is HIGH --- 
-
   // randomly select an action
-  device_used = random(1,6);
+  // device_used = random(1,6);
+  device_used = 1;
 
   // initialize values at 0 
   cmd.yaw = 0;
@@ -47,24 +43,12 @@ void loop() {
   cmd.device_used = device_used;
 
   // select values based on device used
-  if (device_used == 1){
-    // turn left
-    cmd.roll = 20;
-  }else if (device_used == 2){
-    // turn right
-    cmd.roll = -20;
-  }else if (device_used == 3){
-    // climb
-    cmd.pitch = -20;
-  }else if (device_used == 4){
-    // ascend
-    cmd.pitch = 20;
-  }else if (device_used == 5){
-    // flash the beacon
-    cmd.yaw = 20;
-  }else{
-    // not used
-    cmd.yaw = -20;
+  if (device_used == 1){ cmd.roll = 20;            // turn left
+  }else if (device_used == 2){ cmd.roll = -20;     // turn right
+  }else if (device_used == 3){ cmd.pitch = -20;    // Ascend
+  }else if (device_used == 4){ cmd.pitch = 20;     // Descend
+  }else if (device_used == 5){ cmd.yaw = 20;       // flash the beacon
+  }else{ // game over 
   }
 
   delay(100);
@@ -85,76 +69,70 @@ void loop() {
   newTxData = true;
   transmitData(cmd,newTxData);
 
-  // flush the buffer
-  Serial.flush();
-
   // end serial
   Serial.end();
 
   // debug
   digitalWrite(ledControlPins[1], HIGH);
 
+  // delay
+  delay(100);
 
+  // Start timer and initialize game
+  prevUpdateTime = millis();
+  user_action = false;
 
-  while(true);
+  // wait for user input 
+  while ((user_action == false) && (user_timeout == false)) {
 
+  if (device_used == 1){
+    // read potetiometer during turn left action and update user_action flag
+    turn_left_action(user_action, ledControlPins);
 
-    /*
-    // --- Joystick Reading (your original code) ---
-    int xRaw = analogRead(JOYSTICK_VRX); // Read X-axis
-    int yRaw = analogRead(JOYSTICK_VRY); // Read Y-axis
+  }else if (device_used == 2){
+    // read potetiometer during turn right action and update user_action flag
+    turn_right_action(user_action,ledControlPins);
 
-    // Map the values from 0-1023 to -90 to 90
-    int xMapped = map(xRaw, 0, 1023, -90, 90);
-    int yMapped = map(yRaw, 0, 1023, -90, 90);
+  }else if (device_used == 3){
+    // read joystick during ascend action and update user_action flag
+    ascend_action(user_action);
 
-    // Read the Joystick button state (LOW means pressed)
-    bool buttonPressed = (digitalRead(JOYSTICK_SW) == LOW);
+  }else if (device_used == 4){
+    // read joystick during descend action and update user_action flag
+    descend_action(user_action);
 
-    // --- Button 1 Reading ---
-    if (digitalRead(buttonPins[0]) == LOW) {
-      // Button 1 pressed (LOW state)
-        ledStates[1] = !ledStates[1]; // Toggle LED 2
-        digitalWrite(ledPins[1], ledStates[1] ? HIGH : LOW);
-
-      // Confirm still pressed
-      while (digitalRead(buttonPins[1]) == LOW);
-    }
-
-    // --- Button 2 Reading ---
-    if (digitalRead(buttonPins[1]) == LOW) { 
-        // Button 2 pressed (LOW state)
-        ledStates[1] = !ledStates[1]; // Toggle LED 2
-        digitalWrite(ledPins[1], ledStates[1] ? HIGH : LOW);
-        
-        // Confirm still pressed
-        while (digitalRead(buttonPins[1]) == LOW);
-    }
-
-    // --- Potentiometer Reading ---
-    int potValue = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
-
-    // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
-    if (potValue<=50){
-      ledsOn=0;
-    }else if (potValue>50&&potValue<260){
-      ledsOn=1;
-    }else if (potValue>=260&&potValue<512){
-      ledsOn=2;
-    }else if (potValue>=512&&potValue<760){
-      ledsOn=3;
-    }else{
-      ledsOn=4;
-    }
-    // Control the potentiometer-controlled LEDs based on the potentiometer value
-        for (int i = 0; i < ledsOn; i++){
-      digitalWrite(ledControlPins[i],HIGH);
-    }
-
-    for (int i = 4; i > ledsOn; i--){
-      digitalWrite(ledControlPins[i],LOW);
-    }
-
+  }else if (device_used == 5){
+    // read button during flash the beacon action and update user_action flag
+    press_button_action(user_action,ledPins,ledStates, buttonPins);
+  }
+    // check time (if user_timeout is true, exist while loop)
     delay(100);
-    */
+    currentUpdateTime = millis();
+    user_timeout = (currentUpdateTime - prevUpdateTime) > updateInterval;
+  }
+
+  if (user_timeout == false){
+    // add 1 to score
+    score += 1;
+  }else{
+    // reset score after user_timeout is true and breaking out of loop
+    score = 0;
+  }
+
+  // debug
+  digitalWrite(ledControlPins[2], HIGH);
+
+  // delay
+  delay(100);
+
+  // debug (clear all)
+  for (int i = 0; i < 4;i++){
+    digitalWrite(ledControlPins[i], LOW);
+  }
+
+  // delay
+  delay(100);
+
+
+
 }

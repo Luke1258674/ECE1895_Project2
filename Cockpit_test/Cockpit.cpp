@@ -106,12 +106,12 @@ void get_UART_signal(Command& cmd, bool& newData){
       while (Serial.available() > 0){
         byte dumpTheData = Serial.read();
       }
-
-      // turn game line pin back to low once data is received
-      digitalWrite(GAMELINE_PIN, LOW);
       
       // update bool to track if new data has arrived
       newData = true;
+
+      // turn game line pin back to low once data is received
+      digitalWrite(GAMELINE_PIN, LOW);
     }
   }
 
