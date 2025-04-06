@@ -1,15 +1,6 @@
 #ifndef COCKPIT_HEADER
 #define COCKPIT_HEADER
 
-// ATMEGA328P Pinout
-// SPI for bootloader: 1 (RESET), 17 (MOSI), 18 (MISO), 19 (SCK)
-// SPI for OLED Display: 14 (CS1), 15 (CS2),16 (DC),11 (RES1), 12 (RES2) ,17 (MOSI), 19 (SCK)
-// I2C for LCD display: 27 (SDA),28 (SCL)
-// USART for connecting ATMEGA328Ps: 2 (RX), 3 (TX)
-// DFPlayer mini Audio Serial pins: 5 (TX) and 6 (RX)
-// LED shift register: 11 (MR), 12 (ST_CP), 25 (DS), 26 (SH_CP)
-// UART communication indicator : 13
-
 // import LCD Display functions
 #include "./LCD_Display.h"
 
@@ -18,6 +9,18 @@
 
 // import DFPlayer Mini library
 #include "./Speaker.h"
+
+// struct to store yaw, roll, pitch, score, and device used
+struct Command{
+    //Plane information
+    int8_t yaw;
+    int8_t roll;
+    int8_t pitch;
+
+    //Display info
+    uint8_t score;
+    uint8_t device_used;
+};
 
 // LED indicator 
 //Pin connected to ST_CP of 74HC595
@@ -35,62 +38,30 @@
 // Start button
 #define START_PIN 3
 
-//Connector Pin
-#define CONNECTOR_PIN 4
+// Game Line Pin
+#define GAMELINE_PIN 4
 
 /* This function sets up the multiple LEDs to the initial state */
 void LED_startup();
 
-/* This function sets up the multiple cockpit devices to the initial state
-(unused) lcd --- LiquidCrystal_I2C object defined to communicate with the LCD display. Name should be lcd.  */ 
-void LCD_startup(LiquidCrystal_I2C lcd);
+/* This function sets up the multiple cockpit devices to the initial state  */ 
+void LCD_startup(LiquidCrystal_I2C &lcd);
 
-/* This function sets up the OLED display to the initial state
-pitch_display & roll_display --- Adafruit_SSD1306 object used to communicate with the OLED display. */
-void OLED_startup(Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display);
+/* This function sets up the OLED display to the initial state */
+void OLED_startup(Adafruit_SSD1306 &pitch_display, Adafruit_SSD1306 &roll_display);
+void OLED_end(Adafruit_SSD1306 &pitch_display, Adafruit_SSD1306 &roll_display);
 
-/* This function sets up the DFPlayer Mini to the initial state
-folder & track --- integer to specify the folder and track number for the DFPlayer Mini
-playBack_time --- integer to specify the playback time in milliseconds */
+/* This function sets up the DFPlayer Mini to the initial state */
 void Speaker_output(int folder, int track, int playback_time);
 
-/* This function is used to read the bytes from the UART connection from other MCUs
-parameter_array --- An int array of size 4 which stores the values for [score, pitch, roll, device]*/
-void get_UART_signal(int parameter_array[]);
+/* This function is used to read the bytes from the UART connection from other MCUs */
+void get_UART_signal(Command& cmd, bool& newData);
 
-/* This function is used to get the turn dial function 
-pitch_display & roll_display --- Adafruit_SSD1306 object used to communicate with the OLED display.
-lcd --- LiquidCrystal_I2C object defined to communicate with the LCD display. Name should be lcd.
-parameter_array --- An int array of size 4 which stores the values for [score, pitch, roll, device]
-time --- interger of the time from when the game began */ 
-void display_turn_dial_OLED(Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display, int parameter_array[],int time);
-
-/* This function is used to get the move joystick function 
-pitch_display & roll_display --- Adafruit_SSD1306 object used to communicate with the OLED display.
-parameter_array --- An int array of size 4 which stores the values for [score, pitch, roll, device]
-time --- interger of the time from when the game began 
-direction -- character to specify the audio direction 'u' = pull up, 'd' = pull down, 'l' = turn left, 'r' = turn right */ 
-void display_move_joystick_OLED(char direction, Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display, int parameter_array[],int time);
-
-/* This function is used to get the turn dial function 
-pitch_display & roll_display --- Adafruit_SSD1306 object used to communicate with the OLED display.
-parameter_array --- An int array of size 4 which stores the values for [score, pitch, roll, device]
-time --- interger of the time from when the game began */ 
-void display_press_button_OLED(Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display, int parameter_array[],int time);
-
-/* This function displays the game over screen on the OLED
-pitch_display & roll_display --- Adafruit_SSD1306 object used to communicate with the OLED display.
-parameter_array --- An int array of size 4 which stores the values for [score, pitch, roll, device]
-time --- interger of the time from when the game began */ 
-void display_game_over_OLED(Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display, int parameter_array[],int time);
-
-/* This function displays the game over screen on the LCD 
-(unused) lcd --- LiquidCrystal_I2C object defined to communicate with the LCD display. Name should be lcd.
-parameter_array --- An int array of size 4 which stores the values for [score, pitch, roll, device]
-time --- interger of the time from when the game began */ 
-void display_game_over_LCD(LiquidCrystal_I2C lcd, int score,int time);
-
-/* This function checks whether the start button is pressed and sends a signal high to the connector pin */
+/* This function checks whether the start button is pressed and sends a signal high to the game line pin */
 void notify_start_button_pressed();
+
+/* display for debugging */
+void debug(const LiquidCrystal_I2C& lcd, const Command& cmd);
+
 
 #endif 

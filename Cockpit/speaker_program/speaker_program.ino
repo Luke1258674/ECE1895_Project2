@@ -24,18 +24,18 @@
 
 
 //Initialize the serial ports 
-SoftwareSerial mySoftwareSerial(/*rx =*/4, /*tx =*/3); // RX on Arduino, TX on Arduino
+//SoftwareSerial mySoftwareSerial(/*rx =*/4, /*tx =*/3); // RX on Arduino, TX on Arduino
 DFRobotDFPlayerMini myDFPlayer;
 
 void setup() {
   // begin serial communication with baud rate 9600
-  mySoftwareSerial.begin(9600);
+  Serial.begin(9600);
   
   //Set serial communictaion time out 500ms
   myDFPlayer.setTimeOut(500); 
 
   // define initial values
-  myDFPlayer.begin(mySoftwareSerial); // set serial port for myDFPlayer
+  myDFPlayer.begin(Serial); // set serial port for myDFPlayer
   myDFPlayer.EQ(0); //Normal Equalization
   myDFPlayer.volume(15);  //Set volume value (0~30).
 
@@ -45,6 +45,7 @@ void setup() {
   myDFPlayer.playFolder(1, 1);  
   delay(2000);
 
+  /*
   // Play Engine Startup sound for 10 seconds
   myDFPlayer.playFolder(1, 2);  
   delay(10000);
@@ -80,6 +81,7 @@ void setup() {
   // play "Press Button"
   myDFPlayer.playFolder(2, 6);
   delay(1000);
+  */
 
 }
 
