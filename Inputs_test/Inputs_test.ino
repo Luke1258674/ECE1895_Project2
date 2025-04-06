@@ -24,7 +24,7 @@ uint8_t previous_device_used = 0;
 uint8_t score = 0;
 bool user_action = false;
 bool user_timeout = false;
-
+uint8_t currentrotory = 0;
 // initialize struct
 Command cmd;
 
