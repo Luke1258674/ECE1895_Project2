@@ -76,8 +76,6 @@ void loop() {
     digitalWrite(ledControlPins[0], HIGH);
   }
 
-  // send the struct
-  //updateDataToSend(data_prev_update_time, data_update_interval, newTxData);
   newTxData = true;
 
   // initialize serial
