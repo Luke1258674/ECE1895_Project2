@@ -151,7 +151,7 @@ void displayPitchIndicator_transient(Adafruit_SSD1306 display,int pitch){
     int bits_per_char = 6; // 6 bits per character is needed for the display
 
     // move the display lines based on pitch degree
-    for (uint16_t i = 0; i <= 6; i++){
+    for (uint16_t i = 0; i <= 9; i++){
         int offset_top = (i * display.height()/4)+1+pitch*3;
         int offset_bottom = (i * display.height()/4)-1-pitch*3;
 

@@ -34,7 +34,7 @@ void setup_GPIOpins(const int ledPins[], const int buttonPins[], bool ledStates[
 }
 
 void updateDataToSend(unsigned long& prevUpdateTime, unsigned long updateInterval, bool &newTxData){
-  if ((millis() - prevUpdateTime) == 0){
+  if ((millis() - prevUpdateTime) >=  updateInterval){
     prevUpdateTime = millis();
     // ensure message has been sent
     if (newTxData == false){
@@ -46,56 +46,78 @@ void updateDataToSend(unsigned long& prevUpdateTime, unsigned long updateInterva
 
 void transmitData(const Command& cmd, bool &newTxData){
 
+  delay(100);
+
   // size of transmit data 
   const byte startMarker = 255;
   const byte cmdDataLen = sizeof(cmd);
 
   if (newTxData == true){
     Serial.write(startMarker);
+
     Serial.write((byte*) &cmd, cmdDataLen);
 
     newTxData = false;
   }
+
+  delay(100);
 }
 
 void turn_left_action(bool& user_action, const int ledControlPins[]){
-      // turn left --- Potentiometer Reading ---
-    int pot_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
-    int pot_value_mapped = map(pot_value, 0, 1023, 0, 180); // map to 0 to 180 degrees
 
-    // Variable to control how many LEDs are lit
-    int ledsOn = 0; 
+  // clear all LEDs
+  for (int i = 0; i < 4;i++){
+    digitalWrite(ledControlPins[i], LOW);
+  }
+  
+  // turn left --- Potentiometer Reading ---
+  int pot_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
+  int pot_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
 
-    // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
-    if (pot_value_mapped<=30){ ledsOn=0;
-    }else if (pot_value_mapped<=60){ ledsOn=1;
-    }else if (pot_value_mapped<=90){ ledsOn=2;
-    }else if (pot_value_mapped<=120){ ledsOn=3;
-    }else{ ledsOn=4; 
-    }
+  // Variable to control how many LEDs are lit
+  int ledsOn = 0; 
 
-    // Control the potentiometer-controlled LEDs based on the potentiometer value
-    for (int i = 0; i < ledsOn; i++){
-      digitalWrite(ledControlPins[i],HIGH);
-    }
+  // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
+  if (pot_value_mapped<=45){ ledsOn=0;
+  }else if (pot_value_mapped<=90){ ledsOn=1;
+  }else if (pot_value_mapped<=180){ ledsOn=2;
+  }else if (pot_value_mapped<=225){ ledsOn=3;
+  }else{ ledsOn=4; 
+  }
 
-    // check user action (if user_action is true, exit while loop)
-    user_action = (pot_value_mapped <= 30);
-    delay(100);
+  // Control the potentiometer-controlled LEDs based on the potentiometer value
+  for (int i = 0; i < ledsOn; i++){
+    digitalWrite(ledControlPins[i],HIGH);
+  }
+
+  // check user action (if user_action is true, exit while loop)
+  if (pot_value_mapped < 45){
+    user_action = true;
+  }else{
+    user_action = false;
+  }
+
+  delay(100);
 }
 
 void turn_right_action(bool& user_action, const int ledControlPins[]){
+
+  // clear all LEDs
+  for (int i = 0; i < 4;i++){
+    digitalWrite(ledControlPins[i], LOW);
+  }
+
   int pot_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
-    int pot_value_mapped = map(pot_value, 0, 1023, 0, 180); // map to 0 to 180 degrees
+  int pot_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
 
     // Variable to control how many LEDs are lit
     int ledsOn = 0; 
 
     // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
-    if (pot_value_mapped<=30){ ledsOn=0;
-    }else if (pot_value_mapped<=60){ ledsOn=1;
-    }else if (pot_value_mapped<=90){ ledsOn=2;
-    }else if (pot_value_mapped<=120){ ledsOn=3;
+    if (pot_value_mapped<=45){ ledsOn=0;
+    }else if (pot_value_mapped<=90){ ledsOn=1;
+    }else if (pot_value_mapped<=180){ ledsOn=2;
+    }else if (pot_value_mapped<=225){ ledsOn=3;
     }else{ ledsOn=4; 
     }
 
@@ -105,7 +127,11 @@ void turn_right_action(bool& user_action, const int ledControlPins[]){
     }
 
     // check user action (if user_action is true, exit while loop)
-    user_action = (pot_value_mapped >= 150);
+    if (pot_value_mapped > 225){
+      user_action = true;
+    }else{
+      user_action = false;
+    }
 
     delay(100);
 }
@@ -123,7 +149,7 @@ void ascend_action(bool& user_action){
     bool buttonPressed = (digitalRead(JOYSTICK_SW) == LOW);
 
     // check user action (if user_action is true, exit while loop)
-    user_action = (yMapped >= 45);
+    user_action = (yMapped <= -45);
 
     delay(100);
 }
@@ -141,7 +167,7 @@ void descend_action(bool& user_action){
     bool buttonPressed = (digitalRead(JOYSTICK_SW) == LOW);
 
     // check user action (if user_action is true, exit while loop)
-    user_action = (yMapped <= -45);
+    user_action = (yMapped >= 45);
 
     delay(100);
 }
@@ -150,14 +176,14 @@ void press_button_action(bool& user_action, const int ledPins[], bool ledStates[
   // --- Button 1 Reading ---
   if (digitalRead(buttonPins[0]) == LOW) {
   // Button 1 pressed (LOW state)
-    ledStates[1] = !ledStates[1]; // Toggle LED 2
-    digitalWrite(ledPins[1], ledStates[1] ? HIGH : LOW);
+    ledStates[0] = !ledStates[0]; // Toggle LED 2
+    digitalWrite(ledPins[0], ledStates[0] ? HIGH : LOW);
 
   // Confirm still pressed
-  while (digitalRead(buttonPins[1]) == LOW);
+  while (digitalRead(buttonPins[0]) == LOW);
 
   // update user action (if user_action is true, exit while loop)
-  user_action = true;    delay(100);
+  user_action = true;    
   }
 
   // --- Button 2 Reading ---

@@ -49,6 +49,7 @@ void LCD_startup(LiquidCrystal_I2C &lcd);
 
 /* This function sets up the OLED display to the initial state */
 void OLED_startup(Adafruit_SSD1306 &pitch_display, Adafruit_SSD1306 &roll_display);
+void OLED_end(Adafruit_SSD1306 &pitch_display, Adafruit_SSD1306 &roll_display);
 
 /* This function sets up the DFPlayer Mini to the initial state */
 void Speaker_output(int folder, int track, int playback_time);
@@ -56,25 +57,11 @@ void Speaker_output(int folder, int track, int playback_time);
 /* This function is used to read the bytes from the UART connection from other MCUs */
 void get_UART_signal(Command& cmd, bool& newData);
 
-/* This function is used to get the turn dial function  */ 
-void display_turn_dial_OLED(Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display, int parameter_array[],int time);
-
-/* This function is used to get the move joystick function  */ 
-void display_move_joystick_OLED(char direction, Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display, int parameter_array[],int time);
-
-/* This function is used to get the turn dial function  */ 
-void display_press_button_OLED(Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display, int parameter_array[],int time);
-
-/* This function displays the game over screen on the OLED */ 
-void display_game_over_OLED(Adafruit_SSD1306 pitch_display, Adafruit_SSD1306 roll_display, int parameter_array[],int time);
-
-/* This function displays the game over screen on the LCD  */ 
-void display_game_over_LCD(LiquidCrystal_I2C lcd, int score,int time);
-
 /* This function checks whether the start button is pressed and sends a signal high to the game line pin */
 void notify_start_button_pressed();
 
 /* display for debugging */
-void debug(LiquidCrystal_I2C &lcd, const Command& cmd);
+void debug(const LiquidCrystal_I2C& lcd, const Command& cmd);
+
 
 #endif 

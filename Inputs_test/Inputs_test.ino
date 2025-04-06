@@ -11,11 +11,16 @@ const int ledControlPins[] = {5, 6, 9, 10}; // 4 LEDs for potentiometer control
 // timing variables
 unsigned long prevUpdateTime = 0;
 unsigned long currentUpdateTime = 0;
-unsigned long updateInterval = 500;
+unsigned long updateInterval = 5000;
+
+// UART timing variables
+unsigned long data_prev_update_time = 0;
+unsigned long data_update_interval = 500;
 bool newTxData = false; 
 
 // values to use in the game
 uint8_t device_used = 0; 
+uint8_t previous_device_used = 0;
 uint8_t score = 0;
 bool user_action = false;
 bool user_timeout = false;
@@ -27,31 +32,46 @@ void setup() {
 
   // initialize I/Os
   setup_GPIOpins(ledPins,buttonPins,ledStates,ledControlPins);
+
+  // give sufficient time for cockpit board to setup
+  delay(100);
 }
 
 void loop() {
-  // randomly select an action
-  // device_used = random(1,6);
-  device_used = 1;
+
+  // debug (clear all)
+  for (int i = 0; i < 4;i++){
+    digitalWrite(ledControlPins[i], LOW);
+  }
+
+  // select action
+  if ((user_timeout == true) || (score == 100)){
+    // game over 
+    device_used = 255;
+
+    // reset user_timeout flag
+    user_timeout = false;
+
+  }else{
+    // randomly select an action 
+    device_used = random(1,6);
+  }
 
   // initialize values at 0 
   cmd.yaw = 0;
   cmd.roll = 0;
   cmd.pitch = 0;
-  //cmd.score = score;
   cmd.score = score;
   cmd.device_used = device_used;
 
   // select values based on device used
-  if (device_used == 1){ cmd.roll = 20;            // turn left
-  }else if (device_used == 2){ cmd.roll = -20;     // turn right
-  }else if (device_used == 3){ cmd.pitch = -20;    // Ascend
-  }else if (device_used == 4){ cmd.pitch = 20;     // Descend
-  }else if (device_used == 5){ cmd.yaw = 20;       // flash the beacon
+  if (device_used == 1){ cmd.roll = 45;            // turn left
+  }else if (device_used == 2){ cmd.roll = -45;     // turn right
+  }else if (device_used == 3){ cmd.pitch = -45;    // Ascend
+  }else if (device_used == 4){ cmd.pitch = 45;     // Descend
+  }else if (device_used == 5){ cmd.yaw = 45;       // flash the beacon
   }else{ // game over 
   }
-
-  delay(100);
 
   // wait for start button to be pressed and game line to be HIGH
   while (digitalRead(GAMELINE_PIN) == LOW){
@@ -60,27 +80,31 @@ void loop() {
     digitalWrite(ledControlPins[0], HIGH);
   }
 
-  delay(100);
+  // debug
+  digitalWrite(ledControlPins[1], HIGH);
+
+  // send the struct
+  //updateDataToSend(data_prev_update_time, data_update_interval, newTxData);
+  newTxData = true;
 
   // initialize serial
   Serial.begin(9600);
 
-  // send the struct
-  newTxData = true;
+  delay(100);
+
   transmitData(cmd,newTxData);
+
+  delay(100);
 
   // end serial
   Serial.end();
 
-  // debug
-  digitalWrite(ledControlPins[1], HIGH);
-
-  // delay
-  delay(100);
-
   // Start timer and initialize game
   prevUpdateTime = millis();
   user_action = false;
+
+  // debug
+  digitalWrite(ledControlPins[2], HIGH);
 
   // wait for user input 
   while ((user_action == false) && (user_timeout == false)) {
@@ -106,33 +130,19 @@ void loop() {
     press_button_action(user_action,ledPins,ledStates, buttonPins);
   }
     // check time (if user_timeout is true, exist while loop)
-    delay(100);
     currentUpdateTime = millis();
-    user_timeout = (currentUpdateTime - prevUpdateTime) > updateInterval;
+    user_timeout = ((currentUpdateTime - prevUpdateTime) > updateInterval);
   }
 
   if (user_timeout == false){
     // add 1 to score
     score += 1;
-  }else{
-    // reset score after user_timeout is true and breaking out of loop
-    score = 0;
+    // reduce update intervale
+    updateInterval -= 20;
   }
 
-  // debug
-  digitalWrite(ledControlPins[2], HIGH);
-
-  // delay
-  delay(100);
-
-  // debug (clear all)
-  for (int i = 0; i < 4;i++){
-    digitalWrite(ledControlPins[i], LOW);
-  }
-
-  // delay
-  delay(100);
-
+  // store previous input 
+  previous_device_used = device_used;
 
 
 }
