@@ -30,6 +30,7 @@ void setup_GPIOpins(const int ledPins[], const int buttonPins[], bool ledStates[
 
     // set up game line pin to input
     pinMode(GAMELINE_PIN,INPUT_PULLUP);
+    
 
 }
 
@@ -72,8 +73,9 @@ void turn_left_action(bool& user_action, const int ledControlPins[]){
   
   // turn left --- Potentiometer Reading ---
   int pot_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
+  
   int pot_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
-
+  currentrotory=pot_value_mapped;
   // Variable to control how many LEDs are lit
   int ledsOn = 0; 
 
@@ -109,7 +111,7 @@ void turn_right_action(bool& user_action, const int ledControlPins[]){
 
   int pot_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
   int pot_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
-
+  currentrotory=pot_value_mapped;
     // Variable to control how many LEDs are lit
     int ledsOn = 0; 
 
@@ -147,7 +149,7 @@ void ascend_action(bool& user_action){
 
     // Read the Joystick button state (LOW means pressed)
     bool buttonPressed = (digitalRead(JOYSTICK_SW) == LOW);
-
+    currentY=yMapped;
     // check user action (if user_action is true, exit while loop)
     user_action = (yMapped <= -45);
 
@@ -165,7 +167,7 @@ void descend_action(bool& user_action){
 
     // Read the Joystick button state (LOW means pressed)
     bool buttonPressed = (digitalRead(JOYSTICK_SW) == LOW);
-
+    currentY=yMapped;
     // check user action (if user_action is true, exit while loop)
     user_action = (yMapped >= 45);
 
@@ -174,6 +176,20 @@ void descend_action(bool& user_action){
 
 void press_button_action(bool& user_action, const int ledPins[], bool ledStates[],const int buttonPins[]){
   // --- Button 1 Reading ---
+int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
+int checking_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
+int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
+int yMapped_check = map(yRaw, 0, 1023, -90, 90);
+if (cheching_value_mapped!=currentrotory)
+{
+user_timeout == true;
+}
+else if (yMapped_check!=currentY)
+{
+user_timeout == true;
+}
+
+
   if (digitalRead(buttonPins[0]) == LOW) {
   // Button 1 pressed (LOW state)
     ledStates[0] = !ledStates[0]; // Toggle LED 2
