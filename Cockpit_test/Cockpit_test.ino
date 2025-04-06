@@ -35,10 +35,7 @@ void setup() {
   digitalWrite(GATE_PIN, LOW);
 
   // start pin initialization 
-  pinMode(START_PIN,INPUT_PULLUP);
-
-  // Play Engine Startup sound for 10 seconds
-  //myDFPlayer.playFolder(1, 2,10000);  
+  pinMode(START_PIN,INPUT_PULLUP); 
 
   // move OLED to start up state
   OLED_startup(pitch_display, roll_display);
@@ -56,8 +53,13 @@ void setup() {
 
   delay(1000);
 
+  // turn 4 red LEDs on
+  digitalWrite(LATCH_PIN, LOW);   // get ready to store shift register (stores at rising edge)
+  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 15);   // shift out the bits 
+  digitalWrite(LATCH_PIN, HIGH);   // store shift register
+
   // move DFPlayer Mini to start up state
-  //Speaker_output(1, 1, 2000);
+  Speaker_output(1, 1, 2000);
 
   // start timer only for the first loop
   beginTime = millis();
@@ -141,27 +143,27 @@ void loop() {
   // Select process based on device used
   if (cmd.device_used == 1){
     // Audio for "turn left"
-    //Speaker_output(2,2, 1000);
+    Speaker_output(2,2, 1000);
 
   }else if (cmd.device_used == 2){
     // Audio for "turn right"
-    //Speaker_output(2,1, 1000);
+    Speaker_output(2,1, 1000);
 
   }else if (cmd.device_used == 3){
     // Audio for "Pull up"
-    //Speaker_output(2,3, 1000);
+    Speaker_output(2,3, 1000);
     
   }else if (cmd.device_used == 4){
     // Audio for "Pull down"
-    //Speaker_output(2,4, 1000);
+    Speaker_output(2,4, 1000);
 
   }else if (cmd.device_used == 5){
     // play "Press Button" for 1 second
-    // Speaker_output(2,6, 1000);
+    Speaker_output(2,6, 1000);
 
   }else{
     // play "game ended" 
-    // Speaker_output(1,4, 1000);
+    Speaker_output(1,4, 1000);
     game_over = true;
   }
 

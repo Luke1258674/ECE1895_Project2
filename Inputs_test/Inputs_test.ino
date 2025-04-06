@@ -11,7 +11,7 @@ const int ledControlPins[] = {5, 6, 9, 10}; // 4 LEDs for potentiometer control
 // timing variables
 unsigned long prevUpdateTime = 0;
 unsigned long currentUpdateTime = 0;
-unsigned long updateInterval = 5000;
+unsigned long updateInterval = 7000;
 
 // UART timing variables
 unsigned long data_prev_update_time = 0;

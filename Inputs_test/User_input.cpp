@@ -49,7 +49,7 @@ void transmitData(const Command& cmd, bool &newTxData){
   delay(100);
 
   // size of transmit data 
-  const byte startMarker = 255;
+  const byte startMarker = 23;
   const byte cmdDataLen = sizeof(cmd);
 
   if (newTxData == true){
