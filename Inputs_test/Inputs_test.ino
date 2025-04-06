@@ -25,6 +25,7 @@ uint8_t score = 0;
 bool user_action = false;
 bool user_timeout = false;
 int currentrotory = 0;
+int currentY = 0;
 // initialize struct
 Command cmd;
 
