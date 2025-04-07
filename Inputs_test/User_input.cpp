@@ -63,7 +63,7 @@ void transmitData(const Command& cmd, bool &newTxData){
   delay(100);
 }
 
-void turn_left_action(bool& user_action, const int ledControlPins[]){
+void turn_left_action(bool& user_action, const int ledControlPins[],int& currentrotory){
 
   
   
@@ -89,7 +89,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[]){
       
   }
   for (int p=ledsOn; p<5; p++){
-    digitalWrite(ledControlPins[i],LOW);
+    digitalWrite(ledControlPins[p],LOW);
   }
     
     
@@ -103,7 +103,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[]){
   delay(100);
 }
 
-void turn_right_action(bool& user_action, const int ledControlPins[]){
+void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory){
 
   
 
@@ -126,7 +126,7 @@ void turn_right_action(bool& user_action, const int ledControlPins[]){
       digitalWrite(ledControlPins[i],HIGH);
     }
     for (int p=ledsOn; p<5; p++){
-    digitalWrite(ledControlPins[i],LOW);
+    digitalWrite(ledControlPins[p],LOW);
     }
 
     // check user action (if user_action is true, exit while loop)
@@ -139,7 +139,7 @@ void turn_right_action(bool& user_action, const int ledControlPins[]){
     delay(100);
 }
 
-void ascend_action(bool& user_action){
+void ascend_action(bool& user_action,int& currentY){
     // --- Joystick Reading (your original code) ---
     int xRaw = analogRead(JOYSTICK_VRX); // Read X-axis
     int yRaw = analogRead(JOYSTICK_VRY); // Read Y-axis
@@ -157,7 +157,7 @@ void ascend_action(bool& user_action){
     delay(100);
 }
 
-void descend_action(bool& user_action){
+void descend_action(bool& user_action, int& currentY){
     // --- Joystick Reading (your original code) ---
     int xRaw = analogRead(JOYSTICK_VRX); // Read X-axis
     int yRaw = analogRead(JOYSTICK_VRY); // Read Y-axis
@@ -175,20 +175,21 @@ void descend_action(bool& user_action){
     delay(100);
 }
 
-void press_button_action(bool& user_action, const int ledPins[], bool ledStates[],const int buttonPins[]){
+void press_button_action(bool& user_action, const int ledPins[], bool ledStates[],const int buttonPins[], int& currentrotory, int& currentY, bool& user_timeout){
   // --- Button 1 Reading ---
-int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
-int checking_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
-int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
-int yMapped_check = map(yRaw, 0, 1023, -90, 90);
-if (cheching_value_mapped!=currentrotory)
-{
-user_timeout == true;
-}
-else if (yMapped_check!=currentY)
-{
-user_timeout == true;
-}
+  int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
+  int checking_value_mapped = map(checking_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
+  int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
+  int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
+
+  if (checking_value_mapped!= currentrotory)
+  {
+    user_timeout == true;
+  }
+  else if (yMapped_check!=currentY)
+  {
+    user_timeout == true;
+  }
 
 
   if (digitalRead(buttonPins[0]) == LOW) {

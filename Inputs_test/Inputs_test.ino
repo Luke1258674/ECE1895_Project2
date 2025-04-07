@@ -26,6 +26,7 @@ bool user_action = false;
 bool user_timeout = false;
 int currentrotory = 0;
 int currentY = 0;
+
 // initialize struct
 Command cmd;
 
@@ -101,23 +102,23 @@ void loop() {
 
   if (device_used == 1){
     // read potetiometer during turn left action and update user_action flag
-    turn_left_action(user_action, ledControlPins);
+    turn_left_action(user_action, ledControlPins,currentrotory);
 
   }else if (device_used == 2){
     // read potetiometer during turn right action and update user_action flag
-    turn_right_action(user_action,ledControlPins);
+    turn_right_action(user_action,ledControlPins,currentrotory);
 
   }else if (device_used == 3){
     // read joystick during ascend action and update user_action flag
-    ascend_action(user_action);
+    ascend_action(user_action,currentY);
 
   }else if (device_used == 4){
     // read joystick during descend action and update user_action flag
-    descend_action(user_action);
+    descend_action(user_action,currentY);
 
   }else if (device_used == 5){
     // read button during flash the beacon action and update user_action flag
-    press_button_action(user_action,ledPins,ledStates, buttonPins);
+    press_button_action(user_action,ledPins,ledStates, buttonPins, currentrotory ,currentY, user_timeout);
   }
     // check time (if user_timeout is true, exist while loop)
     currentUpdateTime = millis();
