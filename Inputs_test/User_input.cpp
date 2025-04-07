@@ -31,7 +31,6 @@ void setup_GPIOpins(const int ledPins[], const int buttonPins[], bool ledStates[
     // set up game line pin to input
     pinMode(GAMELINE_PIN,INPUT_PULLUP);
     
-
 }
 
 void updateDataToSend(unsigned long& prevUpdateTime, unsigned long updateInterval, bool &newTxData){
@@ -50,7 +49,7 @@ void transmitData(const Command& cmd, bool &newTxData){
   delay(100);
 
   // size of transmit data 
-  const byte startMarker = 255;
+  const byte startMarker = 23;
   const byte cmdDataLen = sizeof(cmd);
 
   if (newTxData == true){
