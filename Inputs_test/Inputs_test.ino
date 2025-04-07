@@ -24,7 +24,8 @@ uint8_t previous_device_used = 0;
 uint8_t score = 0;
 bool user_action = false;
 bool user_timeout = false;
-
+int currentrotory = 0;
+int currentY = 0;
 // initialize struct
 Command cmd;
 
@@ -39,10 +40,6 @@ void setup() {
 
 void loop() {
 
-  // debug (clear all)
-  for (int i = 0; i < 4;i++){
-    digitalWrite(ledControlPins[i], LOW);
-  }
 
   // select action
   if ((user_timeout == true) || (score == 100)){
@@ -80,11 +77,6 @@ void loop() {
     digitalWrite(ledControlPins[0], HIGH);
   }
 
-  // debug
-  digitalWrite(ledControlPins[1], HIGH);
-
-  // send the struct
-  //updateDataToSend(data_prev_update_time, data_update_interval, newTxData);
   newTxData = true;
 
   // initialize serial
@@ -103,9 +95,7 @@ void loop() {
   prevUpdateTime = millis();
   user_action = false;
 
-  // debug
-  digitalWrite(ledControlPins[2], HIGH);
-
+  
   // wait for user input 
   while ((user_action == false) && (user_timeout == false)) {
 

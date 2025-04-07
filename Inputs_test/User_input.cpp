@@ -65,10 +65,7 @@ void transmitData(const Command& cmd, bool &newTxData){
 
 void turn_left_action(bool& user_action, const int ledControlPins[]){
 
-  // clear all LEDs
-  for (int i = 0; i < 4;i++){
-    digitalWrite(ledControlPins[i], LOW);
-  }
+  
   
   // turn left --- Potentiometer Reading ---
   int pot_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
@@ -89,8 +86,13 @@ void turn_left_action(bool& user_action, const int ledControlPins[]){
   // Control the potentiometer-controlled LEDs based on the potentiometer value
   for (int i = 0; i < ledsOn; i++){
     digitalWrite(ledControlPins[i],HIGH);
+      
   }
-
+  for (int p=ledsOn; p<5; p++){
+    digitalWrite(ledControlPins[i],LOW);
+  }
+    
+    
   // check user action (if user_action is true, exit while loop)
   if (pot_value_mapped < 45){
     user_action = true;
@@ -103,10 +105,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[]){
 
 void turn_right_action(bool& user_action, const int ledControlPins[]){
 
-  // clear all LEDs
-  for (int i = 0; i < 4;i++){
-    digitalWrite(ledControlPins[i], LOW);
-  }
+  
 
   int pot_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
   int pot_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
@@ -125,6 +124,9 @@ void turn_right_action(bool& user_action, const int ledControlPins[]){
     // Control the potentiometer-controlled LEDs based on the potentiometer value
     for (int i = 0; i < ledsOn; i++){
       digitalWrite(ledControlPins[i],HIGH);
+    }
+    for (int p=ledsOn; p<5; p++){
+    digitalWrite(ledControlPins[i],LOW);
     }
 
     // check user action (if user_action is true, exit while loop)
