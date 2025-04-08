@@ -1,4 +1,3 @@
-
 // Connect hearer files
 #include "./User_input.h"
 
@@ -102,19 +101,19 @@ void loop() {
 
   if (device_used == 1){
     // read potetiometer during turn left action and update user_action flag
-    turn_left_action(user_action, ledControlPins,currentrotory);
+    turn_left_action(user_action, ledControlPins,currentrotory, currentY, user_timeout, buttonPins);
 
   }else if (device_used == 2){
     // read potetiometer during turn right action and update user_action flag
-    turn_right_action(user_action,ledControlPins,currentrotory);
+    turn_right_action(user_action,ledControlPins,currentrotory, currentY, user_timeout, buttonPins);
 
   }else if (device_used == 3){
     // read joystick during ascend action and update user_action flag
-    ascend_action(user_action,currentY);
+    ascend_action(user_action,currentY, currentrotory, user_timeout, buttonPins);
 
   }else if (device_used == 4){
     // read joystick during descend action and update user_action flag
-    descend_action(user_action,currentY);
+    descend_action(user_action,currentY,currentrotory, user_timeout, buttonPins);
 
   }else if (device_used == 5){
     // read button during flash the beacon action and update user_action flag
@@ -137,3 +136,4 @@ void loop() {
 
 
 }
+
