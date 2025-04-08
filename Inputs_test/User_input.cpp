@@ -63,7 +63,7 @@ void transmitData(const Command& cmd, bool &newTxData){
   delay(100);
 }
 
-void turn_left_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout){
+void turn_left_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
 
   int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
   int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
@@ -118,7 +118,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[],int& current
   delay(100);
 }
 
-void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout){
+void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
 
   
   int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
@@ -169,7 +169,7 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
     delay(100);
 }
 
-void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout){
+void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
     // --- Joystick Reading (your original code) ---
     int xRaw = analogRead(JOYSTICK_VRX); // Read X-axis
     int yRaw = analogRead(JOYSTICK_VRY); // Read Y-axis
@@ -203,7 +203,7 @@ void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& u
     delay(100);
 }
 
-void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout){
+void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
     // --- Joystick Reading (your original code) ---
   int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
   int checking_value_mapped = map(checking_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
