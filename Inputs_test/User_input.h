@@ -32,16 +32,16 @@ void updateDataToSend(unsigned long& prevUpdateTime,unsigned long updateInterval
 void transmitData(const Command& cmd, bool& newTxData);
 
 // read from potentiometer under turn left action
-void turn_left_action(bool& user_action, const int ledControlPins[],int& currentrotory);
+void turn_left_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]);
 
 // read from potentiometer under turn right action
-void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory);
+void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]);
 
 // read joystick during climb action and update user_action flag
-void ascend_action(bool& user_action,int& currentY);
+void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]);
 
 // read joystick during climb action and update user_action flag
-void descend_action(bool& user_action,int& currentY);
+void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]);
 
 // read button during press button action and update user_action flag
 void press_button_action(bool& user_action, const int ledPins[], bool ledStates[],const int buttonPins[],int& currentrotory, int& currentY, bool& user_timeout);
