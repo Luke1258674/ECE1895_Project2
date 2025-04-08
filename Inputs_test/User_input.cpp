@@ -63,9 +63,10 @@ void transmitData(const Command& cmd, bool &newTxData){
   delay(100);
 }
 
-void turn_left_action(bool& user_action, const int ledControlPins[],int& currentrotory){
+void turn_left_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout){
 
-  
+  int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
+  int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
   
   // turn left --- Potentiometer Reading ---
   int pot_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
@@ -83,6 +84,20 @@ void turn_left_action(bool& user_action, const int ledControlPins[],int& current
   }else{ ledsOn=4; 
   }
 
+  else if (yMapped_check!=currentY)
+  {
+    user_timeout == true;
+  }
+  else if (digitalRead(buttonPins[0]) == LOW)
+  {
+    user_timeout == true;
+  }
+  else if (pot_value_mapped!<=95)
+  {
+    user_timeout == true;
+  }
+
+    
   // Control the potentiometer-controlled LEDs based on the potentiometer value
   for (int i = 0; i < ledsOn; i++){
     digitalWrite(ledControlPins[i],HIGH);
@@ -103,10 +118,11 @@ void turn_left_action(bool& user_action, const int ledControlPins[],int& current
   delay(100);
 }
 
-void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory){
+void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout){
 
   
-
+  int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
+  int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
   int pot_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
   int pot_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
   currentrotory=pot_value_mapped;
@@ -128,6 +144,20 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
     for (int p=ledsOn; p<5; p++){
     digitalWrite(ledControlPins[p],LOW);
     }
+  int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
+  int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
+  else if (yMapped_check!=currentY)
+  {
+    user_timeout == true;
+  }
+  else if (digitalRead(buttonPins[0]) == LOW)
+  {
+    user_timeout == true;
+  }
+  else if (pot_value_mapped!>=95)
+  {
+    user_timeout == true;
+  }
 
     // check user action (if user_action is true, exit while loop)
     if (pot_value_mapped > 225){
