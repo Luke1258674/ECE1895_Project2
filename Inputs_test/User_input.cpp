@@ -63,7 +63,7 @@ void transmitData(const Command& cmd, bool &newTxData){
   delay(100);
 }
 
-void turn_left_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
+void turn_left_action(bool& user_action, const int ledControlPins[], int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
   // ckcking the value of joystick in case it was used
   int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
   int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
@@ -85,7 +85,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[],int& current
   }else{ ledsOn=4; 
   }
   // checking if incorrect actions were taken
-  else if (yMapped_check!=currentY)
+  if (yMapped_check!=currentY)
   {
     user_timeout == true;
   }
@@ -93,7 +93,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[],int& current
   {
     user_timeout == true;
   }
-  else if (pot_value_mapped!<=95)
+  else if (pot_value_mapped >= 95)
   {
     user_timeout == true;
   }
@@ -116,7 +116,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[],int& current
   delay(100);
 }
 
-void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
+void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
 
   // checking joystick in case it was used
   int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
@@ -145,7 +145,7 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
     digitalWrite(ledControlPins[p],LOW);
     }
   // checking for incorrect action
-  else if (yMapped_check!=currentY)
+  if (yMapped_check!=currentY)
   {
     user_timeout == true;
   }
@@ -153,7 +153,7 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
   {
     user_timeout == true;
   }
-  else if (pot_value_mapped!>=95)
+  else if (pot_value_mapped <= 95)
   {
     user_timeout == true;
   }
@@ -184,7 +184,7 @@ void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& u
   {
     user_timeout == true;
   }
-  else if (yMapped!<=1)
+  else if (yMapped >= 1)
   {
     user_timeout == true;
   }
@@ -220,7 +220,7 @@ void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& 
   {
     user_timeout == true;
   }
-  else if (yMapped!>=-1)
+  else if (yMapped <=-1)
   {
     user_timeout == true;
   }
@@ -284,3 +284,4 @@ void press_button_action(bool& user_action, const int ledPins[], bool ledStates[
 
   delay(100);
 }
+
