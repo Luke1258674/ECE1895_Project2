@@ -139,7 +139,7 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
     delay(100);
 }
 
-void ascend_action(bool& user_action,int& currentY){
+void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout){
     // --- Joystick Reading (your original code) ---
     int xRaw = analogRead(JOYSTICK_VRX); // Read X-axis
     int yRaw = analogRead(JOYSTICK_VRY); // Read Y-axis
@@ -147,7 +147,23 @@ void ascend_action(bool& user_action,int& currentY){
     // Map the values from 0-1023 to -90 to 90
     int xMapped = map(xRaw, 0, 1023, -90, 90);
     int yMapped = map(yRaw, 0, 1023, -90, 90);
+    int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
+  int checking_value_mapped = map(checking_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
 
+  if (checking_value_mapped!= currentrotory)
+  {
+    user_timeout == true;
+  }
+  else if (yMapped!<=1)
+  {
+    user_timeout == true;
+  }
+  else if (digitalRead(buttonPins[0]) == LOW)
+  {
+    user_timeout == true;
+  }
+
+    
     // Read the Joystick button state (LOW means pressed)
     bool buttonPressed = (digitalRead(JOYSTICK_SW) == LOW);
     currentY=yMapped;
@@ -157,8 +173,33 @@ void ascend_action(bool& user_action,int& currentY){
     delay(100);
 }
 
-void descend_action(bool& user_action, int& currentY){
+void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout){
     // --- Joystick Reading (your original code) ---
+  int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
+  int checking_value_mapped = map(checking_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
+  int xRaw = analogRead(JOYSTICK_VRX); // Read X-axis
+    int yRaw = analogRead(JOYSTICK_VRY); // Read Y-axis
+
+    // Map the values from 0-1023 to -90 to 90
+    int xMapped = map(xRaw, 0, 1023, -90, 90);
+    int yMapped = map(yRaw, 0, 1023, -90, 90);
+
+  if (checking_value_mapped!= currentrotory)
+  {
+    user_timeout == true;
+  }
+  else if (yMapped!>=-1)
+  {
+    user_timeout == true;
+  }
+  else if (digitalRead(buttonPins[0]) == LOW)
+  {
+    user_timeout == true;
+  }
+
+
+
+    
     int xRaw = analogRead(JOYSTICK_VRX); // Read X-axis
     int yRaw = analogRead(JOYSTICK_VRY); // Read Y-axis
 
@@ -190,7 +231,7 @@ void press_button_action(bool& user_action, const int ledPins[], bool ledStates[
   {
     user_timeout == true;
   }
-
+  
 
   if (digitalRead(buttonPins[0]) == LOW) {
   // Button 1 pressed (LOW state)
