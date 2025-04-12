@@ -55,6 +55,15 @@ void loop() {
     // randomly select an action
     randomSeed(analogRead(A5));
     device_used = random(1,6);
+    if(device_used == 1 && ledsOn ==0)
+    {
+    device_used = 3;
+    }
+    if(device_used == 2 && ledsOn ==4)
+    {
+    device_used = 4;
+    }
+    
   }
 
   // initialize values at 0 
