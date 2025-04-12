@@ -91,21 +91,22 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
   }else{ ledsOn=4; 
   }
   // checking if incorrect actions were taken
-  if (yMapped_check!=currentY)
+  if (yMapped_check < -10 || yMapped_check > 10)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (digitalRead(buttonPins[0]) == LOW)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (pot_value_mapped >= 95)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
+  
   // Control the potentiometer-controlled LEDs based on the potentiometer value
   // along with checking only one LED was turned off when rotating right
-  if(ledsOn=(NumberOfLEDsOnCurrently-1)
+  if(ledsOn=(NumberOfLEDsOnCurrently-1))
   {
       for (int i = 0; i < ledsOn; i++)
       {
@@ -119,11 +120,11 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
   }
   else if (ledsOn<(NumberOfLEDsOnCurrently-1))
   {
-  user_timeout == true;
+  user_timeout = true;
   }
   else if (ledsOn>(NumberOfLEDsOnCurrently))
   {
-  user_timeout == true
+  user_timeout = true;
   }
   else 
   {
@@ -153,20 +154,20 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
     }
 
   // checking for incorrect action
-  if (yMapped_check!=currentY)
+  if (yMapped_check < -10 || yMapped_check > 10)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (digitalRead(buttonPins[0]) == LOW)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (pot_value_mapped <= 95)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
 
-  if(ledsOn=(NumberOfLEDsOnCurrently+1)
+  if(ledsOn=(NumberOfLEDsOnCurrently+1))
   {
       for (int i = 0; i < ledsOn; i++)
       {
@@ -180,11 +181,11 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
   }
   else if (ledsOn<(NumberOfLEDsOnCurrently))
   {
-  user_timeout == true;
+  user_timeout = true;
   }
   else if (ledsOn>(NumberOfLEDsOnCurrently+1))
   {
-  user_timeout == true
+  user_timeout = true;
   }
   else 
   {
@@ -206,24 +207,24 @@ void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& u
   int checking_value_mapped = map(checking_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
   // running ckecks if the incorrect action was taken
   // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
-    int errorLedsOn
+    int errorLedsOn;
     if (checking_value_mapped<=45){ errorLedsOn=0;
     }else if (checking_value_mapped<=90){ errorLedsOn=1;
     }else if (checking_value_mapped<=180){ errorLedsOn=2;
     }else if (checking_value_mapped<=225){ errorLedsOn=3;
-    }else{ erroeLedsOn=4; 
+    }else{ errorLedsOn=4; 
     }
   if (errorLedsOn!= ledsOn)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (yMapped >= 1)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (digitalRead(buttonPins[0]) == LOW)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
     // variable for incorrect action check
     currentY=yMapped;
@@ -249,24 +250,24 @@ void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& 
 
     
   // checking there is no incorrect action
-  int errorLedsOn
+  int errorLedsOn;
     if (checking_value_mapped<=45){ errorLedsOn=0;
     }else if (checking_value_mapped<=90){ errorLedsOn=1;
     }else if (checking_value_mapped<=180){ errorLedsOn=2;
     }else if (checking_value_mapped<=225){ errorLedsOn=3;
-    }else{ erroeLedsOn=4; 
+    }else{ errorLedsOn=4; 
     }
   if (errorLedsOn!=ledsOn)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (yMapped <=-1)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (digitalRead(buttonPins[0]) == LOW)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
 
     // variable used for incorrect action check
@@ -287,20 +288,20 @@ void press_button_action(bool& user_action, const int ledPins[], bool ledStates[
   int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
 
   // checking if incorrect action was taken
-  int errorLedsOn
+  int errorLedsOn;
     if (checking_value_mapped<=45){ errorLedsOn=0;
     }else if (checking_value_mapped<=90){ errorLedsOn=1;
     }else if (checking_value_mapped<=180){ errorLedsOn=2;
     }else if (checking_value_mapped<=225){ errorLedsOn=3;
-    }else{ erroeLedsOn=4; 
+    }else{ errorLedsOn=4; 
     }
   if (errorLedsOn!=ledsOn)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
-  else if (yMapped_check!=currentY)
+  if (yMapped_check < -10 || yMapped_check > 10)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   
 
@@ -331,4 +332,5 @@ void press_button_action(bool& user_action, const int ledPins[], bool ledStates[
 
   delay(100);
 }
+
 
