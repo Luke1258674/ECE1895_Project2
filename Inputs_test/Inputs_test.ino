@@ -25,6 +25,8 @@ bool user_action = false;
 bool user_timeout = false;
 int currentrotory = 0;
 int currentY = 0;
+// Variable to control how many LEDs are lit
+int ledsOn = 0; 
 
 // initialize struct
 Command cmd;
