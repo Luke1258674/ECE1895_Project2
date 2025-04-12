@@ -76,7 +76,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
   // curent rotary value used to check if incorrect action was taken
   currentrotory=pot_value_mapped;
   // Variable to control how many LEDs are lit
-  int ledsOn = 0; 
+  
 
   // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
   if (pot_value_mapped<=45){ ledsOn=0;
@@ -128,7 +128,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
 }
 
 void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
-
+  int NumberOfLEDsOnCurrently=ledsOn;
   // checking joystick in case it was used
   int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
   int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
@@ -138,7 +138,7 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
   // using this for incorrect input ckecking  
   currentrotory=pot_value_mapped;
     
-
+  
     // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
     if (pot_value_mapped<=45){ ledsOn=0;
     }else if (pot_value_mapped<=90){ ledsOn=1;
@@ -168,14 +168,31 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
     user_timeout == true;
   }
 
-    // check user action (if user_action is true, exit while loop)
-    if (pot_value_mapped > 225){
-      user_action = true;
-    }else{
-      user_action = false;
-    }
-
-    delay(100);
+  if(ledsOn=(NumberOfLEDsOnCurrently+1)
+  {
+      for (int i = 0; i < ledsOn; i++)
+      {
+      digitalWrite(ledControlPins[i],HIGH);
+      }
+      for (int p=ledsOn; p<5; p++)
+      {
+      digitalWrite(ledControlPins[p],LOW);
+      }
+  user_action = true;
+  }
+  else if (ledsOn<(NumberOfLEDsOnCurrently))
+  {
+  user_timeout == true;
+  }
+  else if (ledsOn>(NumberOfLEDsOnCurrently+1))
+  {
+  user_timeout == true
+  }
+  else 
+  {
+  user_action = false;
+  }
+  delay(100);   
 }
 
 void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
@@ -234,7 +251,14 @@ void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& 
 
     
   // checking there is no incorrect action
-  if (checking_value_mapped!= currentrotory)
+  int errorLedsOn
+    if (checking_value_mapped<=45){ errorLedsOn=0;
+    }else if (checking_value_mapped<=90){ errorLedsOn=1;
+    }else if (checking_value_mapped<=180){ errorLedsOn=2;
+    }else if (checking_value_mapped<=225){ errorLedsOn=3;
+    }else{ erroeLedsOn=4; 
+    }
+  if (errorLedsOn!=ledsOn)
   {
     user_timeout == true;
   }
