@@ -137,8 +137,7 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
   int pot_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
   // using this for incorrect input ckecking  
   currentrotory=pot_value_mapped;
-    // Variable to control how many LEDs are lit
-    int ledsOn = 0; 
+    
 
     // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
     if (pot_value_mapped<=45){ ledsOn=0;
@@ -191,7 +190,15 @@ void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& u
   int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
   int checking_value_mapped = map(checking_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
   // running ckecks if the incorrect action was taken
-  if (checking_value_mapped!= currentrotory)
+  // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
+    int errorLedsOn
+    if (checking_value_mapped<=45){ errorLedsOn=0;
+    }else if (checking_value_mapped<=90){ errorLedsOn=1;
+    }else if (checking_value_mapped<=180){ errorLedsOn=2;
+    }else if (checking_value_mapped<=225){ errorLedsOn=3;
+    }else{ erroeLedsOn=4; 
+    }
+  if (errorLedsOn!= ledsOn)
   {
     user_timeout == true;
   }
