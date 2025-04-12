@@ -64,7 +64,8 @@ void transmitData(const Command& cmd, bool &newTxData){
 }
 
 void turn_left_action(bool& user_action, const int ledControlPins[], int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
-  // ckcking the value of joystick in case it was used
+  int NumberOfLEDsOnCurrently=ledsOn;
+    // ckcking the value of joystick in case it was used
   int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
   int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
   
@@ -98,21 +99,31 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
     user_timeout == true;
   }
   // Control the potentiometer-controlled LEDs based on the potentiometer value
-  for (int i = 0; i < ledsOn; i++){
-    digitalWrite(ledControlPins[i],HIGH);
-      
+  // along with checking only one LED was turned off when rotating right
+  if(ledsOn=(NumberOfLEDsOnCurrently-1)
+  {
+      for (int i = 0; i < ledsOn; i++)
+      {
+      digitalWrite(ledControlPins[i],HIGH);
+      }
+      for (int p=ledsOn; p<5; p++)
+      {
+      digitalWrite(ledControlPins[p],LOW);
+      }
+  user_action = true;
   }
-  for (int p=ledsOn; p<5; p++){
-    digitalWrite(ledControlPins[p],LOW);
+  else if (ledsOn<(NumberOfLEDsOnCurrently-1))
+  {
+  user_timeout == true;
   }
-    
-  // check user action (if user_action is true, exit while loop)
-  if (pot_value_mapped < 45){
-    user_action = true;
-  }else{
-    user_action = false;
+  else if (ledsOn>(NumberOfLEDsOnCurrently))
+  {
+  user_timeout == true
   }
-
+  else 
+  {
+  user_action = false;
+  }
   delay(100);
 }
 
