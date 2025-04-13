@@ -1,4 +1,3 @@
-
 // Connect hearer files
 #include "./User_input.h"
 
@@ -24,6 +23,10 @@ uint8_t previous_device_used = 0;
 uint8_t score = 0;
 bool user_action = false;
 bool user_timeout = false;
+int currentrotory = 0;
+int currentY = 0;
+// Variable to control how many LEDs are lit
+int ledsOn = 2; 
 
 // initialize struct
 Command cmd;
@@ -34,15 +37,27 @@ void setup() {
   setup_GPIOpins(ledPins,buttonPins,ledStates,ledControlPins);
 
   // give sufficient time for cockpit board to setup
-  delay(100);
+  delay(1000);
 }
 
 void loop() {
 
-  // debug (clear all)
-  for (int i = 0; i < 4;i++){
-    digitalWrite(ledControlPins[i], LOW);
+<<<<<<< HEAD
+  // clear LEDs for debug
+  for (int i = 0; i < 4; i++){
+    digitalWrite(ledControlPins[0], LOW);
   }
+
+  delay(100);
+
+  digitalWrite(ledControlPins[0], HIGH);
+
+=======
+  // debug LED
+  digitalWrite(ledControlPins[0],HIGH);
+
+  delay(100);
+>>>>>>> full-input-code
 
   // select action
   if ((user_timeout == true) || (score == 100)){
@@ -53,8 +68,22 @@ void loop() {
     user_timeout = false;
 
   }else{
+<<<<<<< HEAD
     // randomly select an action 
+=======
+    // randomly select an action
+>>>>>>> full-input-code
+    randomSeed(analogRead(A5));
     device_used = random(1,6);
+    if(device_used == 1 && ledsOn ==0)
+    {
+    device_used = 3;
+    }
+    if(device_used == 2 && ledsOn ==4)
+    {
+    device_used = 4;
+    }
+    
   }
 
   // initialize values at 0 
@@ -76,16 +105,15 @@ void loop() {
   // wait for start button to be pressed and game line to be HIGH
   while (digitalRead(GAMELINE_PIN) == LOW){
     delay(10);
+
     // debug LED
-    digitalWrite(ledControlPins[0], HIGH);
+    digitalWrite(ledControlPins[1], HIGH);
   }
 
-  // debug
-  digitalWrite(ledControlPins[1], HIGH);
-
-  // send the struct
-  //updateDataToSend(data_prev_update_time, data_update_interval, newTxData);
   newTxData = true;
+
+  // debug LED
+  digitalWrite(ledControlPins[2], HIGH);
 
   // initialize serial
   Serial.begin(9600);
@@ -103,31 +131,33 @@ void loop() {
   prevUpdateTime = millis();
   user_action = false;
 
-  // debug
+  // debug LED
   digitalWrite(ledControlPins[2], HIGH);
 
+  delay(1000);
+  
   // wait for user input 
   while ((user_action == false) && (user_timeout == false)) {
 
   if (device_used == 1){
     // read potetiometer during turn left action and update user_action flag
-    turn_left_action(user_action, ledControlPins);
+    turn_left_action(user_action, ledControlPins,currentrotory, currentY, user_timeout, buttonPins, ledsOn);
 
   }else if (device_used == 2){
     // read potetiometer during turn right action and update user_action flag
-    turn_right_action(user_action,ledControlPins);
+    turn_right_action(user_action,ledControlPins,currentrotory, currentY, user_timeout, buttonPins, ledsOn);
 
   }else if (device_used == 3){
     // read joystick during ascend action and update user_action flag
-    ascend_action(user_action);
+    ascend_action(user_action,currentY, currentrotory, user_timeout, buttonPins, ledsOn);
 
   }else if (device_used == 4){
     // read joystick during descend action and update user_action flag
-    descend_action(user_action);
+    descend_action(user_action,currentY,currentrotory, user_timeout, buttonPins, ledsOn);
 
   }else if (device_used == 5){
     // read button during flash the beacon action and update user_action flag
-    press_button_action(user_action,ledPins,ledStates, buttonPins);
+    press_button_action(user_action,ledPins,ledStates, buttonPins, currentrotory ,currentY, user_timeout, ledsOn);
   }
     // check time (if user_timeout is true, exist while loop)
     currentUpdateTime = millis();
@@ -143,6 +173,14 @@ void loop() {
 
   // store previous input 
   previous_device_used = device_used;
+
+
+  // clear debug LEDs
+  for (int i = 0; i < 4; i++){
+    digitalWrite(ledControlPins[i],LOW);
+  }
+
+  delay(500);
 
 
 }
