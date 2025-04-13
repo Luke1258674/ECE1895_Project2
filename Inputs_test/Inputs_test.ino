@@ -60,6 +60,7 @@ void loop() {
 
   }else{
     // randomly select an action 
+    randomSeed(analogRead(A5));
     device_used = random(1,6);
   }
 
