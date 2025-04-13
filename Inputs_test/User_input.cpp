@@ -91,44 +91,31 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
   }else{ ledsOn=4; 
   }
   // checking if incorrect actions were taken
-  if (yMapped_check < -10 || yMapped_check > 10)
-  {
+  if (yMapped_check < -20 || yMapped_check > 20){
     user_timeout = true;
   }
-  else if (digitalRead(buttonPins[0]) == LOW)
-  {
+  else if (digitalRead(buttonPins[0]) == LOW){
     user_timeout = true;
   }
-  else if (pot_value_mapped >= 95)
-  {
+  else if (pot_value_mapped >= 225){
     user_timeout = true;
   }
   
   // Control the potentiometer-controlled LEDs based on the potentiometer value
   // along with checking only one LED was turned off when rotating right
-  if(ledsOn=(NumberOfLEDsOnCurrently-1))
-  {
-      for (int i = 0; i < ledsOn; i++)
-      {
+  if(ledsOn==(NumberOfLEDsOnCurrently-1)){
+    for (int i = 0; i < ledsOn; i++){
       digitalWrite(ledControlPins[i],HIGH);
-      }
-      for (int p=ledsOn; p<4; p++)
-      {
+    }
+    
+    for (int p=ledsOn; p<4; p++){
       digitalWrite(ledControlPins[p],LOW);
-      }
+    }
   user_action = true;
-  }
-  else if (ledsOn<(NumberOfLEDsOnCurrently-1))
-  {
-  user_timeout = true;
-  }
-  else if (ledsOn>(NumberOfLEDsOnCurrently))
-  {
-  user_timeout = true;
-  }
-  else 
-  {
-  user_action = false;
+  }else if (ledsOn>(NumberOfLEDsOnCurrently+1)){
+    user_timeout = true;
+  }else {
+    user_action = false;
   }
   delay(100);
 }
@@ -154,42 +141,29 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
     }
 
   // checking for incorrect action
-  if (yMapped_check < -10 || yMapped_check > 10)
-  {
+  if (yMapped_check < -20 || yMapped_check > 20){
     user_timeout = true;
   }
-  else if (digitalRead(buttonPins[0]) == LOW)
-  {
+  else if (digitalRead(buttonPins[0]) == LOW){
     user_timeout = true;
   }
-  else if (pot_value_mapped <= 95)
-  {
+  else if (pot_value_mapped <= 45){
     user_timeout = true;
   }
 
-  if(ledsOn=(NumberOfLEDsOnCurrently+1))
+  if(ledsOn==(NumberOfLEDsOnCurrently+1))
   {
-      for (int i = 0; i < ledsOn; i++)
-      {
+    for (int i = 0; i < ledsOn; i++){
       digitalWrite(ledControlPins[i],HIGH);
-      }
-      for (int p=ledsOn; p<4; p++)
-      {
+    }
+    for (int p=ledsOn; p<4; p++){
       digitalWrite(ledControlPins[p],LOW);
-      }
+    }
   user_action = true;
-  }
-  else if (ledsOn<(NumberOfLEDsOnCurrently))
-  {
-  user_timeout = true;
-  }
-  else if (ledsOn>(NumberOfLEDsOnCurrently+1))
-  {
-  user_timeout = true;
-  }
-  else 
-  {
-  user_action = false;
+  }else if (ledsOn<(NumberOfLEDsOnCurrently-1)){
+    user_timeout = true;
+  }else {
+    user_action = false;
   }
   delay(100);   
 }
