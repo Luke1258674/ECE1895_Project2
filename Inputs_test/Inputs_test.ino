@@ -42,22 +42,10 @@ void setup() {
 
 void loop() {
 
-<<<<<<< HEAD
-  // clear LEDs for debug
-  for (int i = 0; i < 4; i++){
-    digitalWrite(ledControlPins[0], LOW);
-  }
-
-  delay(100);
-
-  digitalWrite(ledControlPins[0], HIGH);
-
-=======
   // debug LED
   digitalWrite(ledControlPins[0],HIGH);
 
   delay(100);
->>>>>>> full-input-code
 
   // select action
   if ((user_timeout == true) || (score == 100)){
@@ -68,11 +56,7 @@ void loop() {
     user_timeout = false;
 
   }else{
-<<<<<<< HEAD
-    // randomly select an action 
-=======
     // randomly select an action
->>>>>>> full-input-code
     randomSeed(analogRead(A5));
     device_used = random(1,6);
     if(device_used == 1 && ledsOn ==0)

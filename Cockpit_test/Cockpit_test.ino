@@ -35,14 +35,10 @@ void setup() {
   digitalWrite(GATE_PIN, LOW);
 
   // start pin initialization 
-<<<<<<< HEAD
-  pinMode(START_PIN,INPUT_PULLUP); 
-=======
   pinMode(START_PIN,INPUT_PULLUP);
 
   // Play Engine Startup sound for 10 seconds
   // myDFPlayer.playFolder(1, 2,10000);  
->>>>>>> main
 
   // move OLED to start up state
   OLED_startup(pitch_display, roll_display);
@@ -66,11 +62,7 @@ void setup() {
   digitalWrite(LATCH_PIN, HIGH);   // store shift register
 
   // move DFPlayer Mini to start up state
-<<<<<<< HEAD
-  // Speaker_output(1, 1, 2000);
-=======
   Speaker_output(1, 1, 2000);
->>>>>>> main
 
   // start timer only for the first loop
   beginTime = millis();
@@ -159,11 +151,7 @@ void loop() {
     digitalWrite(LATCH_PIN, HIGH);   // store shift register
 
     // Audio for "turn left"
-<<<<<<< HEAD
-    // Speaker_output(2,2, 1000);
-=======
     Speaker_output(2,2, 1000);
->>>>>>> main
 
   }else if (cmd.device_used == 2){
     // turn 2 green LEDs on
@@ -172,11 +160,7 @@ void loop() {
     digitalWrite(LATCH_PIN, HIGH);   // store shift register
 
     // Audio for "turn right"
-<<<<<<< HEAD
-    // Speaker_output(2,1, 1000);
-=======
     Speaker_output(2,1, 1000);
->>>>>>> main
 
   }else if (cmd.device_used == 3){
     // turn 3 green LEDs on
@@ -185,11 +169,7 @@ void loop() {
     digitalWrite(LATCH_PIN, HIGH);   // store shift register
 
     // Audio for "Pull up"
-<<<<<<< HEAD
-    // Speaker_output(2,3, 1000);
-=======
     Speaker_output(2,3, 1000);
->>>>>>> main
     
   }else if (cmd.device_used == 4){
     // turn 4 green LEDs on
@@ -198,11 +178,7 @@ void loop() {
     digitalWrite(LATCH_PIN, HIGH);   // store shift register
 
     // Audio for "Pull down"
-<<<<<<< HEAD
-    // Speaker_output(2,4, 1000);
-=======
     Speaker_output(2,4, 1000);
->>>>>>> main
 
   }else if (cmd.device_used == 5){
     // play "Press Button" for 1 second
