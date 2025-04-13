@@ -35,10 +35,19 @@ void setup() {
   setup_GPIOpins(ledPins,buttonPins,ledStates,ledControlPins);
 
   // give sufficient time for cockpit board to setup
-  delay(100);
+  delay(1000);
 }
 
 void loop() {
+
+  // clear LEDs for debug
+  for (int i = 0; i < 4; i++){
+    digitalWrite(ledControlPins[0], LOW);
+  }
+
+  delay(100);
+
+  digitalWrite(ledControlPins[0], HIGH);
 
 
   // select action
@@ -73,11 +82,15 @@ void loop() {
   // wait for start button to be pressed and game line to be HIGH
   while (digitalRead(GAMELINE_PIN) == LOW){
     delay(10);
+
     // debug LED
-    digitalWrite(ledControlPins[0], HIGH);
+    digitalWrite(ledControlPins[1], HIGH);
   }
 
   newTxData = true;
+
+  // debug LED
+  digitalWrite(ledControlPins[2], HIGH);
 
   // initialize serial
   Serial.begin(9600);
