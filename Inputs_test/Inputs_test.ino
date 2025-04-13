@@ -37,11 +37,15 @@ void setup() {
   setup_GPIOpins(ledPins,buttonPins,ledStates,ledControlPins);
 
   // give sufficient time for cockpit board to setup
-  delay(100);
+  delay(1000);
 }
 
 void loop() {
 
+  // debug LED
+  digitalWrite(ledControlPins[0],HIGH);
+
+  delay(100);
 
   // select action
   if ((user_timeout == true) || (score == 100)){
@@ -85,8 +89,9 @@ void loop() {
   // wait for start button to be pressed and game line to be HIGH
   while (digitalRead(GAMELINE_PIN) == LOW){
     delay(10);
+
     // debug LED
-    digitalWrite(ledControlPins[0], HIGH);
+    digitalWrite(ledControlPins[1], HIGH);
   }
 
   newTxData = true;
@@ -107,6 +112,8 @@ void loop() {
   prevUpdateTime = millis();
   user_action = false;
 
+  // debug LED
+  digitalWrite(ledControlPins[2], HIGH);
   
   // wait for user input 
   while ((user_action == false) && (user_timeout == false)) {
@@ -146,8 +153,12 @@ void loop() {
   // store previous input 
   previous_device_used = device_used;
 
+    // clear debug LEDs
+  for (int i = 0; i < 4; i++){
+    digitalWrite(ledControlPins[i],LOW);
+  }
+
+  delay(100);
+
 
 }
-
-
-
