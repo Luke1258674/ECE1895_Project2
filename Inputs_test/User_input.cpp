@@ -23,10 +23,15 @@ void setup_GPIOpins(const int ledPins[], const int buttonPins[], bool ledStates[
     }
 
     // Setup Potentiometer LED Pins
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 2; i++) {
         pinMode(ledControlPins[i], OUTPUT); // Set the LED pins as output
-        digitalWrite(ledControlPins[i], LOW); // Start with LEDs off
+        digitalWrite(ledControlPins[i], HIGH); // Start with LEDs off
     }
+    for (int k = 2; k < 4; k++)
+        {
+        pinMode(ledControlPins[k], OUTPUT); // Set the LED pins as output
+        digitalWrite(ledControlPins[k], LOW); // Start with LEDs off
+        }
 
     // set up game line pin to input
     pinMode(GAMELINE_PIN,INPUT_PULLUP);
@@ -63,8 +68,9 @@ void transmitData(const Command& cmd, bool &newTxData){
   delay(100);
 }
 
-void turn_left_action(bool& user_action, const int ledControlPins[], int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
-  // ckcking the value of joystick in case it was used
+void turn_left_action(bool& user_action, const int ledControlPins[], int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[], int& ledsOn){
+  int NumberOfLEDsOnCurrently=ledsOn;
+    // ckcking the value of joystick in case it was used
   int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
   int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
   
@@ -75,7 +81,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
   // curent rotary value used to check if incorrect action was taken
   currentrotory=pot_value_mapped;
   // Variable to control how many LEDs are lit
-  int ledsOn = 0; 
+  
 
   // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
   if (pot_value_mapped<=45){ ledsOn=0;
@@ -85,39 +91,37 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
   }else{ ledsOn=4; 
   }
   // checking if incorrect actions were taken
-  if (yMapped_check!=currentY)
-  {
-    user_timeout == true;
+  if (yMapped_check < -20 || yMapped_check > 20){
+    user_timeout = true;
   }
-  else if (digitalRead(buttonPins[0]) == LOW)
-  {
-    user_timeout == true;
+  else if (digitalRead(buttonPins[0]) == LOW){
+    user_timeout = true;
   }
-  else if (pot_value_mapped >= 95)
-  {
-    user_timeout == true;
+  else if (pot_value_mapped >= 225){
+    user_timeout = true;
   }
+  
   // Control the potentiometer-controlled LEDs based on the potentiometer value
-  for (int i = 0; i < ledsOn; i++){
-    digitalWrite(ledControlPins[i],HIGH);
-      
-  }
-  for (int p=ledsOn; p<5; p++){
-    digitalWrite(ledControlPins[p],LOW);
-  }
+  // along with checking only one LED was turned off when rotating right
+  if(ledsOn==(NumberOfLEDsOnCurrently-1)){
+    for (int i = 0; i < ledsOn; i++){
+      digitalWrite(ledControlPins[i],HIGH);
+    }
     
-  // check user action (if user_action is true, exit while loop)
-  if (pot_value_mapped < 45){
-    user_action = true;
-  }else{
+    for (int p=ledsOn; p<4; p++){
+      digitalWrite(ledControlPins[p],LOW);
+    }
+  user_action = true;
+  }else if (ledsOn>(NumberOfLEDsOnCurrently+1)){
+    user_timeout = true;
+  }else {
     user_action = false;
   }
-
   delay(100);
 }
 
-void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
-
+void turn_right_action(bool& user_action, const int ledControlPins[],int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[], int& ledsOn){
+  int NumberOfLEDsOnCurrently=ledsOn;
   // checking joystick in case it was used
   int yRaw_check = analogRead(JOYSTICK_VRY); // Read Y-axis
   int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
@@ -126,9 +130,8 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
   int pot_value_mapped = map(pot_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
   // using this for incorrect input ckecking  
   currentrotory=pot_value_mapped;
-    // Variable to control how many LEDs are lit
-    int ledsOn = 0; 
-
+    
+  
     // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
     if (pot_value_mapped<=45){ ledsOn=0;
     }else if (pot_value_mapped<=90){ ledsOn=1;
@@ -137,38 +140,35 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
     }else{ ledsOn=4; 
     }
 
-    // Control the potentiometer-controlled LEDs based on the potentiometer value
+  // checking for incorrect action
+  if (yMapped_check < -20 || yMapped_check > 20){
+    user_timeout = true;
+  }
+  else if (digitalRead(buttonPins[0]) == LOW){
+    user_timeout = true;
+  }
+  else if (pot_value_mapped <= 45){
+    user_timeout = true;
+  }
+
+  if(ledsOn==(NumberOfLEDsOnCurrently+1))
+  {
     for (int i = 0; i < ledsOn; i++){
       digitalWrite(ledControlPins[i],HIGH);
     }
-    for (int p=ledsOn; p<5; p++){
-    digitalWrite(ledControlPins[p],LOW);
+    for (int p=ledsOn; p<4; p++){
+      digitalWrite(ledControlPins[p],LOW);
     }
-  // checking for incorrect action
-  if (yMapped_check!=currentY)
-  {
-    user_timeout == true;
+  user_action = true;
+  }else if (ledsOn<(NumberOfLEDsOnCurrently-1)){
+    user_timeout = true;
+  }else {
+    user_action = false;
   }
-  else if (digitalRead(buttonPins[0]) == LOW)
-  {
-    user_timeout == true;
-  }
-  else if (pot_value_mapped <= 95)
-  {
-    user_timeout == true;
-  }
-
-    // check user action (if user_action is true, exit while loop)
-    if (pot_value_mapped > 225){
-      user_action = true;
-    }else{
-      user_action = false;
-    }
-
-    delay(100);
+  delay(100);   
 }
 
-void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
+void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[], int& ledsOn){
     // --- Joystick Reading (your original code) ---
     int xRaw = analogRead(JOYSTICK_VRX); // Read X-axis
     int yRaw = analogRead(JOYSTICK_VRY); // Read Y-axis
@@ -180,17 +180,25 @@ void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& u
   int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
   int checking_value_mapped = map(checking_value, 0, 1023, 0, 270); // map to 0 to 270 degrees
   // running ckecks if the incorrect action was taken
-  if (checking_value_mapped!= currentrotory)
+  // Map the potentiometer value to the number of LEDs to turn on (0-4 range)
+    int errorLedsOn;
+    if (checking_value_mapped<=45){ errorLedsOn=0;
+    }else if (checking_value_mapped<=90){ errorLedsOn=1;
+    }else if (checking_value_mapped<=180){ errorLedsOn=2;
+    }else if (checking_value_mapped<=225){ errorLedsOn=3;
+    }else{ errorLedsOn=4; 
+    }
+  if (errorLedsOn!= ledsOn)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (yMapped >= 1)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (digitalRead(buttonPins[0]) == LOW)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
     // variable for incorrect action check
     currentY=yMapped;
@@ -200,7 +208,7 @@ void ascend_action(bool& user_action, int& currentrotory, int& currentY, bool& u
     delay(100);
 }
 
-void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[]){
+void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& user_timeout,const int buttonPins[], int& ledsOn){
     // --- Joystick Reading (your original code) ---
   // checking rotary dial if it was used when not prompted to
   int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
@@ -216,17 +224,24 @@ void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& 
 
     
   // checking there is no incorrect action
-  if (checking_value_mapped!= currentrotory)
+  int errorLedsOn;
+    if (checking_value_mapped<=45){ errorLedsOn=0;
+    }else if (checking_value_mapped<=90){ errorLedsOn=1;
+    }else if (checking_value_mapped<=180){ errorLedsOn=2;
+    }else if (checking_value_mapped<=225){ errorLedsOn=3;
+    }else{ errorLedsOn=4; 
+    }
+  if (errorLedsOn!=ledsOn)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (yMapped <=-1)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   else if (digitalRead(buttonPins[0]) == LOW)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
 
     // variable used for incorrect action check
@@ -238,7 +253,7 @@ void descend_action(bool& user_action, int& currentrotory, int& currentY, bool& 
     delay(100);
 }
 
-void press_button_action(bool& user_action, const int ledPins[], bool ledStates[],const int buttonPins[], int& currentrotory, int& currentY, bool& user_timeout){
+void press_button_action(bool& user_action, const int ledPins[], bool ledStates[],const int buttonPins[], int& currentrotory, int& currentY, bool& user_timeout, int& ledsOn){
   // --- Button 1 Reading ---
   // checking potentiometer value and joystick value in case they were used instead of button
   int checking_value = analogRead(POTENTIOMETER_PIN); // Read the potentiometer value (0 to 1023)
@@ -247,13 +262,20 @@ void press_button_action(bool& user_action, const int ledPins[], bool ledStates[
   int yMapped_check = map(yRaw_check, 0, 1023, -90, 90);
 
   // checking if incorrect action was taken
-  if (checking_value_mapped!= currentrotory)
+  int errorLedsOn;
+    if (checking_value_mapped<=45){ errorLedsOn=0;
+    }else if (checking_value_mapped<=90){ errorLedsOn=1;
+    }else if (checking_value_mapped<=180){ errorLedsOn=2;
+    }else if (checking_value_mapped<=225){ errorLedsOn=3;
+    }else{ errorLedsOn=4; 
+    }
+  if (errorLedsOn!=ledsOn)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
-  else if (yMapped_check!=currentY)
+  if (yMapped_check < -10 || yMapped_check > 10)
   {
-    user_timeout == true;
+    user_timeout = true;
   }
   
 
@@ -284,4 +306,5 @@ void press_button_action(bool& user_action, const int ledPins[], bool ledStates[
 
   delay(100);
 }
+
 
