@@ -103,7 +103,7 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
   
   // Control the potentiometer-controlled LEDs based on the potentiometer value
   // along with checking only one LED was turned off when rotating right
-  if(ledsOn==(NumberOfLEDsOnCurrently-1)){
+  if(pot_value_mapped<=180){
     for (int i = 0; i < ledsOn; i++){
       digitalWrite(ledControlPins[i],HIGH);
     }
@@ -112,8 +112,6 @@ void turn_left_action(bool& user_action, const int ledControlPins[], int& curren
       digitalWrite(ledControlPins[p],LOW);
     }
   user_action = true;
-  }else if (ledsOn>(NumberOfLEDsOnCurrently+1)){
-    user_timeout = true;
   }else {
     user_action = false;
   }
@@ -151,18 +149,17 @@ void turn_right_action(bool& user_action, const int ledControlPins[],int& curren
     user_timeout = true;
   }
 
-  if(ledsOn==(NumberOfLEDsOnCurrently+1))
-  {
+
+    if(pot_value_mapped>180){
     for (int i = 0; i < ledsOn; i++){
       digitalWrite(ledControlPins[i],HIGH);
     }
+    
     for (int p=ledsOn; p<4; p++){
       digitalWrite(ledControlPins[p],LOW);
     }
   user_action = true;
-  }else if (ledsOn<(NumberOfLEDsOnCurrently-1)){
-    user_timeout = true;
-  }else {
+ else {
     user_action = false;
   }
   delay(100);   
@@ -283,7 +280,7 @@ void press_button_action(bool& user_action, const int ledPins[], bool ledStates[
   // Button 1 pressed (LOW state)
     ledStates[0] = !ledStates[0]; // Toggle LED 2
     digitalWrite(ledPins[0], ledStates[0] ? HIGH : LOW);
-
+    digitalWrite(ledPins[1], ledStates[1] ? HIGH : LOW);
   // Confirm still pressed
   while (digitalRead(buttonPins[0]) == LOW);
 
