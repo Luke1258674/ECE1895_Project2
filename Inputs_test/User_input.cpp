@@ -280,6 +280,7 @@ void press_button_action(bool& user_action, const int ledPins[], bool ledStates[
   // Button 1 pressed (LOW state)
     ledStates[0] = !ledStates[0]; // Toggle LED 2
     digitalWrite(ledPins[0], ledStates[0] ? HIGH : LOW);
+    ledStates[1] = !ledStates[1]; // Toggle LED 2
     digitalWrite(ledPins[1], ledStates[1] ? HIGH : LOW);
   // Confirm still pressed
   while (digitalRead(buttonPins[0]) == LOW);
